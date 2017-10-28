@@ -6,9 +6,9 @@ public class RegionVector {
 	
 	public static void main(String[] args) {
 		RegionVector rv1 = new RegionVector(1,5);
-		RegionVector rv2 = new RegionVector(6,7);
+		RegionVector rv2 = new RegionVector(2,4);
 		RegionVector rv3 = new RegionVector(4,10);
-		RegionVector rv = rv1.merge(rv2).invert();
+		RegionVector rv = rv1.subtract(rv2);
 		System.out.println(rv.getRegions());
 	}
 
@@ -98,7 +98,7 @@ public class RegionVector {
             	substart = cursub.getStart();
             	substop = cursub.getStop();
             	if (start < substart) {
-            		resultV.add(new Region(start, substart));
+            		resultV.add(new Region(start, substart-1));
             		start = substop;
             		j++;
             		
@@ -138,11 +138,7 @@ public class RegionVector {
 	}
 	
 	public RegionVector invert(){
-		Vector<Region> resultV = new Vector<Region>();
-		for(int i = 0; i < regions.size()-1; i++){
-			resultV.add(new Region(regions.get(i).getStop(), regions.get(i+1).getStart()));
-		}
-		return new RegionVector(resultV);
+		
 	}
 	
 	public int coveredLength(){

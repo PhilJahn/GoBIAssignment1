@@ -6,10 +6,10 @@ public class RegionVector {
 	
 	public static void main(String[] args) {
 		RegionVector rv1 = new RegionVector(1,5);
-		RegionVector rv2 = new RegionVector(6,7);
+		RegionVector rv2 = new RegionVector(2,4);
 		RegionVector rv3 = new RegionVector(4,10);
-		RegionVector rv = rv1.merge(rv2).invert();
-		System.out.println(rv.getRegions());
+		RegionVector rv = rv1.subtract(rv2);
+		System.out.println(rv.coveredLength());
 	}
 
 
@@ -45,7 +45,7 @@ public class RegionVector {
 
         for (int i = 1; i < regions.size(); i++) {
             Region current = regions.get(i);
-            if (current.getStart() <= stop) {
+            if (current.getStart() <= stop+1) {
                 stop = Math.max(current.getStop(), stop);
             } else {
                 resultV.add(new Region(start, stop));
@@ -86,7 +86,7 @@ public class RegionVector {
             Region cursub = sub.get(j);
             int substart = cursub.getStart();
             int substop = cursub.getStop();
-            while(substop-1 < start && j < sub.size()){
+            while(substop < start && j < sub.size()){
             	j++;
             	if(j < sub.size()){
             		cursub = sub.get(j);
@@ -94,17 +94,17 @@ public class RegionVector {
             		substop = cursub.getStop();
             	}
             }
-            while(substop < stop && substop-1 >= start && j < sub.size()){
+            while(substop < stop && substop >= start && j < sub.size()){
             	substart = cursub.getStart();
             	substop = cursub.getStop();
             	if (start < substart) {
-            		resultV.add(new Region(start, substart));
-            		start = substop;
+            		resultV.add(new Region(start, substart-1));
+            		start = substop +1;
             		j++;
             		
             	}
             	else{
-            		start = substop;
+            		start = substop +1;
             		j++;
             	}
             	if(j < sub.size()){
@@ -114,7 +114,7 @@ public class RegionVector {
             	}
             }
             if(substop >= stop && substart < stop && substart > start){
-            	resultV.add(new Region(start, substart));
+            	resultV.add(new Region(start, substart-1));
             }
             else if(substop >= stop && substart <= start){
             	
@@ -130,19 +130,11 @@ public class RegionVector {
 	
 	public int length(){
 		if(regions.size() > 0){
-			return (regions.get(regions.size()-1).getStop() - regions.get(0).getStart());
+			return (regions.get(regions.size()-1).getStop() - regions.get(0).getStart()+1);
 		}
 		else{
 			return 0;
 		}
-	}
-	
-	public RegionVector invert(){
-		Vector<Region> resultV = new Vector<Region>();
-		for(int i = 0; i < regions.size()-1; i++){
-			resultV.add(new Region(regions.get(i).getStop(), regions.get(i+1).getStart()));
-		}
-		return new RegionVector(resultV);
 	}
 	
 	public int coveredLength(){

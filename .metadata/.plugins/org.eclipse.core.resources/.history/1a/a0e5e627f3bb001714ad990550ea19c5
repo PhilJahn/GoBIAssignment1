@@ -8,7 +8,7 @@ public class RegionVector {
 		RegionVector rv1 = new RegionVector(1,5);
 		RegionVector rv2 = new RegionVector(6,7);
 		RegionVector rv3 = new RegionVector(4,10);
-		RegionVector rv = rv1.merge(rv2).invert();
+		RegionVector rv = rv1.invert();
 		System.out.println(rv.getRegions());
 	}
 
