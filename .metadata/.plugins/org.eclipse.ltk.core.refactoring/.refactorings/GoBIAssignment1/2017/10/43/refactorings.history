@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy 4 elements to &apos;GoBIExercise1/src&apos;&#x0D;&#x0A;- Original project: &apos;GoBIAssignment1&apos;&#x0D;&#x0A;- Destination element: &apos;GoBIExercise1/src&apos;&#x0D;&#x0A;- Original elements:&#x0D;&#x0A;     Region.java&#x0D;&#x0A;     ExonSkipping.java&#x0D;&#x0A;     RegionVector.java&#x0D;&#x0A;     Gene.java" description="Copy compilation units" destination="=GoBIExercise1/src" element1="/src&lt;{Region.java" element2="/src&lt;{ExonSkipping.java" element3="/src&lt;{RegionVector.java" element4="/src&lt;{Gene.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1509191462149" units="4" version="1.0"/>
+</session>
