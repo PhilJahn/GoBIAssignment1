@@ -1,4 +1,2 @@
-/ExonSkipping.class
-/Gene.class
-/Region.class
-/RegionVector.class
+/Region$RegionComparator.class
+/RegionVector$RegionComparator.class

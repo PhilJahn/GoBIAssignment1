@@ -17,5 +17,12 @@ public class Region {
     public int getStop() {
         return stop;
     }
-
+    
+	class RegionComparator implements Comparator<Region>
+	{
+	    public int compare(Region x1, Region x2)
+	    {
+	        return x1.getStart() - x2.getStart();
+	    }
+	}
 }

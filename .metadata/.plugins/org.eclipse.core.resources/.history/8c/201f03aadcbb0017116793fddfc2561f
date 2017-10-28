@@ -1,4 +1,3 @@
-import java.util.Comparator;
 
 public class Region {
     private int start;
@@ -17,5 +16,4 @@ public class Region {
     public int getStop() {
         return stop;
     }
-
 }
