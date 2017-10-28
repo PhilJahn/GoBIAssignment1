@@ -17,5 +17,14 @@ public class Region {
     public int getStop() {
         return stop;
     }
-
+    
+    public int length(){
+    	return stop - start +1;
+    }
+    
+    @Override
+    public String toString(){
+		return start + ":" + stop;
+    	
+    }
 }
