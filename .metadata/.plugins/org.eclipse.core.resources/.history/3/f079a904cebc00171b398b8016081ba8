@@ -9,8 +9,6 @@ import AugmentedTree.IntervalTree;
 
 public class RegionVector extends Region{
 	
-//Start inclusive, Stop exclusive
-	
 	public static void main(String[] args) {
 		RegionVector rv1 = new RegionVector(20,25);
 		RegionVector rv2 = new RegionVector(5,20);

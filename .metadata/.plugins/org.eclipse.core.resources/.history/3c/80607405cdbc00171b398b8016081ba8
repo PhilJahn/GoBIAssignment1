@@ -9,20 +9,18 @@ import AugmentedTree.IntervalTree;
 
 public class RegionVector extends Region{
 	
-//Start inclusive, Stop exclusive
-	
 	public static void main(String[] args) {
-		RegionVector rv1 = new RegionVector(20,25);
-		RegionVector rv2 = new RegionVector(5,20);
+		RegionVector rv1 = new RegionVector(1,5);
+		RegionVector rv2 = new RegionVector(12,40);
 		RegionVector rv3 = new RegionVector(42,48);
-		RegionVector r1 = rv1.subtract(rv2);
+		RegionVector r1 = rv1.merge(rv2).merge(rv3);
 		
 		System.out.println(r1.getRegionsTree().toTreeString());
 		
-		RegionVector rv4 = new RegionVector(4,42);
+		RegionVector rv4 = new RegionVector(6,22);
 		RegionVector rv5 = new RegionVector(40,80);
 		
-		RegionVector r2 = rv4;
+		RegionVector r2 = rv4.merge(rv5);
 		
 		System.out.println(r1.getCoveredRegion(r2).getRegionsTree().toTreeString());
 
@@ -188,7 +186,7 @@ public class RegionVector extends Region{
 			Vector<Region> rvvector = new Vector<Region>();
 			int rvstart = rvarray[i].getStart();
 			int rvstop = rvarray[i].getStop();
-			rvvector = regions.getIntervalsIntersecting(rvstart+1, rvstop-1, rvvector );
+			rvvector = regions.getIntervalsIntersecting(rvstart, rvstop, rvvector );
 			results.addAll(rvvector);
 		}
 		return new RegionVector(results);
