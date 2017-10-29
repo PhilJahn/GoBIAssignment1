@@ -1,6 +1,8 @@
 import java.util.Comparator;
 
-public class Region {
+import AugmentedTree.Interval;
+
+public class Region implements Interval {
     private int start;
     private int stop;
 

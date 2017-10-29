@@ -1,136 +1,146 @@
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.Vector;
+
+import AugmentedTree.IntervalTree;
 
 public class RegionVector {
 	
 	public static void main(String[] args) {
-		RegionVector rv1 = new RegionVector(1,5);
-		RegionVector rv2 = new RegionVector(6,7);
-		RegionVector rv3 = new RegionVector(4,10);
-		RegionVector rv = rv1.merge(rv2).invert();
-		System.out.println(rv.getRegions());
+		RegionVector rv1 = new RegionVector(1,13);
+		RegionVector rv2 = new RegionVector(12,40);
+		RegionVector rv3 = new RegionVector(1,48);
+		RegionVector r1 = rv1.merge(rv2).merge(rv3);
+		
+		System.out.println(r1.getRegionsTree().toTreeString());
+		System.out.println(r1.coveredLength() + " " + r1.length());
+		
+		RegionVector rv4 = new RegionVector(12,22);
+		RegionVector rv5 = new RegionVector(40,80);
+		
+		RegionVector r2 = r1.subtract(rv4.merge(rv5));
+		
+		System.out.println(r2.merge().getRegionsTree().toTreeString());
+
 	}
 
-
-	private Vector<Region> regions;
+	private IntervalTree<Region> regions;
 
 	public RegionVector(int x1, int x2){
-		regions = new Vector<Region>();
+		regions = new IntervalTree<Region>();
 		regions.add(new Region(x1,x2));
-		regions.sort((a,b) -> Integer.compare(a.getStart(),b.getStart()));
+	}
+	
+	public RegionVector(IntervalTree<Region> region){	
+		this.regions = region;
 	}
 	
 	public RegionVector(Vector<Region> region){
-		this.regions = region;
-		if(regions.size() > 1){
-			regions.sort((a,b) -> Integer.compare(a.getStart(),b.getStart()));
-			this.merge();
+		
+		regions = new IntervalTree<Region>();
+		regions.addAll(region);
+	}
+	
+	public RegionVector(Region[] region){
+		
+		regions = new IntervalTree<Region>();
+		for(int i = 0; i < region.length; i++){
+			regions.add(region[i]);
 		}
 	}
 	
-	public Vector<Region> getRegions(){
+	public Region[] getRegionsArray(){
+		return regions.toArray(new Region[0]);
+	}
+	
+	public IntervalTree<Region> getRegionsTree(){
 		return regions;
 	}
 	
-	public void merge(){
+	public Vector<Region> getRegions(){
+		Vector <Region> r = new Vector<Region>();
+		Region[] regionArray = regions.toArray(new Region[0]);
+		for(int i = 0; i < regionArray.length; i++){
+			r.add(regionArray[i]);
+		}
+		return r;
+	}
+	
+	public RegionVector merge(){
+		
+		Vector<Region> resultV = new Vector<Region>();
 
-		regions.sort(new RegionComparator());
-
-        Region r = regions.get(0);
-        int start = r.getStart();
-        int stop = r.getStop();
-
-        Vector<Region> resultV = new Vector<Region>();
-
-        for (int i = 1; i < regions.size(); i++) {
-            Region current = regions.get(i);
-            if (current.getStart() <= stop) {
-                stop = Math.max(current.getStop(), stop);
-            } else {
-                resultV.add(new Region(start, stop));
-                start = current.getStart();
-                stop = current.getStop();
-            }
-        }
-
-        resultV.add(new Region(start, stop));
-        regions = resultV;
+		Iterator<Set<Region>> iterator = regions.groupIterator();
+		while(iterator.hasNext()){
+			Collection<Region> overlap = (Collection<Region>) iterator.next();
+			Vector<Region> overlapVector = new Vector<Region>(overlap);
+			int start = overlapVector.get(0).getStart();
+			overlapVector.sort(new StopRegionComparator());
+			int stop = overlapVector.lastElement().getStop();
+			resultV.add(new Region(start,stop));
+		}
+		
+		return new RegionVector(resultV);
+   
 	}
 	
 	public RegionVector merge(RegionVector rv){
-
-		regions.addAll(rv.getRegions());
-		RegionVector results = new RegionVector(regions); 
 		
-		results.merge();
+		IntervalTree<Region> regions = this.regions.clone(); 
+
+		regions.addAll(rv.getRegionsTree());
+		RegionVector results = new RegionVector(regions); 
 		
         return results;
 	}
 	
 	public RegionVector subtract(RegionVector rv){
-		
-		regions.sort(new RegionComparator());
-		
-		Vector<Region> sub = rv.getRegions();
-		sub.sort(new RegionComparator());
-
-        Vector<Region> resultV = new Vector<Region>();
-        
-        int j = 0;
-        int i = 0;
-        while (i < regions.size()) {
-            Region current = regions.get(i);
-            int start = current.getStart();
-            int stop = current.getStop();
-            Region cursub = sub.get(j);
-            int substart = cursub.getStart();
-            int substop = cursub.getStop();
-            while(substop-1 < start && j < sub.size()){
-            	j++;
-            	if(j < sub.size()){
-            		cursub = sub.get(j);
-            		substart = cursub.getStart();
-            		substop = cursub.getStop();
-            	}
-            }
-            while(substop < stop && substop-1 >= start && j < sub.size()){
-            	substart = cursub.getStart();
-            	substop = cursub.getStop();
-            	if (start < substart) {
-            		resultV.add(new Region(start, substart));
-            		start = substop;
-            		j++;
-            		
-            	}
-            	else{
-            		start = substop;
-            		j++;
-            	}
-            	if(j < sub.size()){
-            		cursub = sub.get(j);
-            		substart = cursub.getStart();
-                	substop = cursub.getStop();
-            	}
-            }
-            if(substop >= stop && substart < stop && substart > start){
-            	resultV.add(new Region(start, substart));
-            }
-            else if(substop >= stop && substart <= start){
-            	
-            }
-            else{
-            	resultV.add(new Region(start,stop));
-            }
-            i++;
-        }
-        return new RegionVector(resultV);
+		IntervalTree<Region> regions = this.regions.clone();
+		rv = rv.merge();
+		Region[] rvarray = rv.getRegionsArray();
+		for(int i = 0; i < rvarray.length; i++){
+			Vector<Region> rvvector = new Vector<Region>();
+			int rvstart = rvarray[i].getStart();
+			int rvstop = rvarray[i].getStop();
+			rvvector = regions.getIntervalsIntersecting(rvstart, rvstop, rvvector );
+			
+			for(int j = 0; j < rvvector.size(); j++){
+				Region curreg = rvvector.get(j);
+				int start = curreg.getStart();
+				int stop = curreg.getStop();
+				
+				if(stop <= rvstop){
+					if(start < rvstart){
+						regions.add(new Region(start,rvstart));
+						regions.remove(curreg);
+					}
+					else{
+						regions.remove(curreg);
+					}
+				}
+				else{
+					if(start < rvstart){
+						regions.add(new Region(start,rvstart));
+						regions.add(new Region(rvstop,stop));
+						regions.remove(curreg);
+					}
+					else{
+						regions.add(new Region(rvstop,stop));
+						regions.remove(curreg);
+					}
+				}
+			}
+		}
+		return new RegionVector(regions);
 		
 	}
 	
 	public int length(){
 		if(regions.size() > 0){
-			return (regions.get(regions.size()-1).getStop() - regions.get(0).getStart());
+			return (regions.getStop()-regions.getStart());
 		}
 		else{
 			return 0;
@@ -147,17 +157,38 @@ public class RegionVector {
 	
 	public int coveredLength(){
 		int l = 0;
-		for(int i = 0; i < regions.size(); i++ ){
-			l += regions.get(i).length();
+		
+		Iterator<Set<Region>> iterator = regions.groupIterator();
+		while(iterator.hasNext()){
+			Collection<Region> overlap = (Collection<Region>) iterator.next();
+			Vector<Region> overlapVector = new Vector<Region>(overlap);
+			int start = overlapVector.get(0).getStart();
+			overlapVector.sort(new StopRegionComparator());
+			int stop = overlapVector.lastElement().getStop();
+			l += stop-start;
 		}
+		
 		return l;
 	}
 	
-	class RegionComparator implements Comparator<Region>
+	public RegionVector getCoveredRegion(RegionVector rv){
+		return rv;
+
+	}
+	
+	class StartRegionComparator implements Comparator<Region>
 	{
 	    public int compare(Region x1, Region x2)
 	    {
 	        return x1.getStart() - x2.getStart();
+	    }
+	}
+	
+	class StopRegionComparator implements Comparator<Region>
+	{
+	    public int compare(Region x1, Region x2)
+	    {
+	        return x1.getStop() - x2.getStop();
 	    }
 	}
 }

@@ -1,3 +1,4 @@
+import AugmentedTree.IntervalTree;
 
 public class Gene {
 
@@ -20,6 +21,7 @@ public class Gene {
 	
 	public Gene(String id, String name, int start, int stop, char strand){
 		this(id, name, start, stop, strand, "");
+
 	}
 
 	/**
