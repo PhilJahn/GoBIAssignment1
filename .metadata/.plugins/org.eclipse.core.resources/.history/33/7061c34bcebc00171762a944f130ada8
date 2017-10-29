@@ -195,10 +195,6 @@ public class RegionVector extends Region{
 
 	}
 	
-	public boolean isSub(RegionVector rv){
-		return regions.containsAll(rv.getRegions());
-	}
-	
 	class StartRegionComparator implements Comparator<Region>
 	{
 	    public int compare(Region x1, Region x2)
