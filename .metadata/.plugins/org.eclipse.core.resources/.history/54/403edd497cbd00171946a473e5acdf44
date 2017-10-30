@@ -1,0 +1,26 @@
+
+public class CDS extends Region {
+	
+	private String trans_id;
+	private int exon;
+	private String prot_id;
+
+	public CDS (int x1, int x2, String trans_id, int exon, String prot_id ){
+		super(x1,x2);
+		this.trans_id = trans_id;
+		this.exon = exon;
+		this.prot_id = prot_id;
+	}
+	
+	public String getTransId(){
+		return trans_id;
+	}
+	
+	public String getProtId(){
+		return prot_id;
+	}
+	
+	public int getExon(){
+		return exon;
+	}
+}

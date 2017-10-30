@@ -1,0 +1,26 @@
+
+public class Annotation {
+	
+	private String id;
+	private int chr;
+	private char strand;
+	
+	public Annotation(String id, int chr, char strand){
+		this.id = id;
+		this.chr = chr;
+	}
+	
+	public String getId(){
+		return id;
+	}
+	
+	public int getChromosome(){
+		return chr;
+	}
+	
+	public char getStrand(){
+		return strand;
+	}
+	
+	
+}

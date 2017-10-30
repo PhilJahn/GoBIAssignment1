@@ -1,0 +1,15 @@
+
+public class CDSAnnotation extends Annotation{
+
+	private String gene_id;
+	
+	public CDSAnnotation(String id, int chr, char strand, String gene_id) {
+		super(id, chr, strand);
+		this.gene_id = gene_id;
+	}
+	
+	public String getGeneId(){
+		return gene_id;
+	}
+
+}

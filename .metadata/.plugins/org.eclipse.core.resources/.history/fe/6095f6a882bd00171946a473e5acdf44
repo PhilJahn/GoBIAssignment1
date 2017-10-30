@@ -1,0 +1,8 @@
+
+public class TranscriptAnnotation {
+
+	public TranscriptAnnotation() {
+		// TODO Auto-generated constructor stub
+	}
+
+}

@@ -5,6 +5,8 @@ import AugmentedTree.Interval;
 public class Region implements Interval {
     private int start;
     private int stop;
+    
+    private Annotation annotation;
 
     public Region(int start, int stop) 
     {

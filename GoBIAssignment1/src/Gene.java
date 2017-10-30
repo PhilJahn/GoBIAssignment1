@@ -1,6 +1,6 @@
 import AugmentedTree.IntervalTree;
 
-public class Gene {
+public class Gene{
 
 	private String id;
 	private String name;
