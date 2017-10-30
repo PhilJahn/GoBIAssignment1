@@ -8,12 +8,12 @@ public class Region implements Interval {
     
     private Annotation annotation;
 
-    public Region(int start, int stop) 
-    {
-        this.start = start;
-        this.stop = stop;
-        this.annotation = null;
-    }
+//    public Region(int start, int stop) 
+//    {
+//        this.start = start;
+//        this.stop = stop;
+//        this.annotation = null;
+//    }
     
     public Region(int start, int stop, Annotation annotation) 
     {

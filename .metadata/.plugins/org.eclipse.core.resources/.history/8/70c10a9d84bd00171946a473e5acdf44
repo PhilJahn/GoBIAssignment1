@@ -12,14 +12,6 @@ public class Region implements Interval {
     {
         this.start = start;
         this.stop = stop;
-        this.annotation = null;
-    }
-    
-    public Region(int start, int stop, Annotation annotation) 
-    {
-        this.start = start;
-        this.stop = stop;
-        this.annotation = annotation;
     }
 
     public int getStart() {
@@ -32,10 +24,6 @@ public class Region implements Interval {
     
     public int length(){
     	return stop - start;
-    }
-    
-    public Annotation getAnnotation(){
-    	return annotation;
     }
     
     @Override

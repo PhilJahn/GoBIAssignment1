@@ -12,7 +12,7 @@ public class RegionVector extends Region{
 //Start inclusive, Stop exclusive
 	
 	public static void main(String[] args) {
-		Annotation a = new Annotation("","",0,'-',"");
+		Annotation a = new Annotation("",0,'-');
 		RegionVector rv1 = new RegionVector(20,25,a,a);
 		RegionVector rv2 = new RegionVector(5,20,a,a);
 		RegionVector rv3 = new RegionVector(42,48,a,a);
@@ -30,11 +30,6 @@ public class RegionVector extends Region{
 	}
 
 	private IntervalTree<Region> regions;
-	
-	public RegionVector(int x1, int x2, Annotation annotation){
-		super(x1,x2,annotation);
-		regions = new IntervalTree<Region>();
-	}
 
 	public RegionVector(int x1, int x2, Annotation annotation, Annotation subannotation){
 		super(x1,x2,annotation);
@@ -205,14 +200,6 @@ public class RegionVector extends Region{
 		return regions.containsAll(rv.getRegions());
 	}
 	
-	public boolean add(Region region){
-		return regions.add(region);
-	}
-	
-	public boolean remove(Region region){
-		return regions.remove(region);
-	}	
-	
 	class StartRegionComparator implements Comparator<Region>
 	{
 	    public int compare(Region x1, Region x2)
@@ -228,5 +215,4 @@ public class RegionVector extends Region{
 	        return x1.getStop() - x2.getStop();
 	    }
 	}
-
 }

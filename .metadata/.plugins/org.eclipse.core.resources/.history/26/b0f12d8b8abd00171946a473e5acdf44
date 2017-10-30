@@ -1,0 +1,8 @@
+
+public class Transcript extends RegionVector{
+
+	public Transcript()  {
+		super();
+	}
+
+}
