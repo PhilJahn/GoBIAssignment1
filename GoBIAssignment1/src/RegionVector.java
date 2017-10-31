@@ -12,20 +12,20 @@ public class RegionVector extends Region{
 //Start inclusive, Stop exclusive
 	
 	public static void main(String[] args) {
-		Annotation a = new Annotation("","",0,'-',"");
+		Annotation a = new Annotation("id","name",0,'-',"");
 		RegionVector rv1 = new RegionVector(20,25,a,a);
 		RegionVector rv2 = new RegionVector(5,20,a,a);
 		RegionVector rv3 = new RegionVector(42,48,a,a);
-		RegionVector r1 = rv1.subtract(rv2);
+		RegionVector r1 = rv1.merge(rv2).merge(rv3);
 		
-		System.out.println(r1.getRegionsTree().toTreeString());
+		System.out.println(r1.toString());
 		
 		RegionVector rv4 = new RegionVector(4,42,a,a);
 		RegionVector rv5 = new RegionVector(40,80,a,a);
 		
-		RegionVector r2 = rv4;
+		RegionVector r2 = r1.invert();
 		
-		System.out.println(r1.getCoveredRegion(r2).getRegionsTree().toTreeString());
+		System.out.println(r1.getCoveredRegion(r2).toString());
 
 	}
 
@@ -197,9 +197,28 @@ public class RegionVector extends Region{
 			rvvector = regions.getIntervalsIntersecting(rvstart+1, rvstop-1, rvvector );
 			results.addAll(rvvector);
 		}
-		return new RegionVector(results,this.getAnnotation());
+		if(results.size() > 0){
+			return new RegionVector(results,this.getAnnotation());
+		}else{
+			return null;
+		}
 
 	}
+	
+	public RegionVector getRegion(Region r){
+		IntervalTree<Region> results = new IntervalTree<Region>();
+		Vector<Region> rvvector = new Vector<Region>();
+		int rvstart = r.getStart();
+		int rvstop = r.getStop();
+		rvvector = regions.getIntervalsIntersecting(rvstart+1, rvstop-1, rvvector );
+		results.addAll(rvvector);
+		if(results.size() > 0){
+			return new RegionVector(results,this.getAnnotation());
+		}else{
+			return null;
+		}
+	}
+
 	
 	public boolean isSub(RegionVector rv){
 		return regions.containsAll(rv.getRegions());
@@ -212,6 +231,14 @@ public class RegionVector extends Region{
 	public boolean remove(Region region){
 		return regions.remove(region);
 	}	
+	
+	public int hashCode(){
+		return this.getAnnotation().hashCode();
+	}
+	
+	public String toString(){
+		return regions.toTreeString() + this.getAnnotation().toString();
+	}
 	
 	class StartRegionComparator implements Comparator<Region>
 	{
@@ -228,5 +255,6 @@ public class RegionVector extends Region{
 	        return x1.getStop() - x2.getStop();
 	    }
 	}
+	
 
 }

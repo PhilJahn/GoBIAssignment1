@@ -3,3 +3,5 @@
 /TranscriptAnnotation.class
 /CDSAnnotation.class
 /Transcript.class
+/Gene$StartRegionComparator.class
+/Gene$StopRegionComparator.class
