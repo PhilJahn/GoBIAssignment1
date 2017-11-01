@@ -237,7 +237,7 @@ public class RegionVector extends Region{
 	}
 	
 	public String toString(){
-		return regions.toTreeString() + this.getAnnotation().toString();
+		return super.toString() + "\n" + regions.toTreeString();
 	}
 	
 	class StartRegionComparator implements Comparator<Region>

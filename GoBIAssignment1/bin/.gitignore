@@ -1,7 +1,4 @@
-/CDS.class
-/Annotation.class
-/TranscriptAnnotation.class
-/CDSAnnotation.class
-/Transcript.class
-/Gene$StartRegionComparator.class
-/Gene$StopRegionComparator.class
+/GeneOld$StartRegionComparator.class
+/GeneOld$StopRegionComparator.class
+/GeneOld.class
+/ExonSkip.class

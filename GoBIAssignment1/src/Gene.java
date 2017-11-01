@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -9,33 +10,33 @@ import AugmentedTree.IntervalTree;
 public class Gene extends Region{
 
 	
-	private IntervalTree<RegionVector> regions;
+	private IntervalTree<Transcript> regions;
 	
 	public Gene(int x1, int x2, Annotation annotation){
 		super(x1,x2,annotation);
-		regions = new IntervalTree<RegionVector>();
+		regions = new IntervalTree<Transcript>();
 	}
 
 	public Gene(int x1, int x2, Annotation annotation, Annotation subannotation){
 		super(x1,x2,annotation);
-		regions = new IntervalTree<RegionVector>();
-		regions.add(new RegionVector(x1,x2,subannotation));
+		regions = new IntervalTree<Transcript>();
+		regions.add(new Transcript(x1,x2,subannotation));
 	}
 	
-	public Gene(IntervalTree<RegionVector> region, Annotation annotation){
+	public Gene(IntervalTree<Transcript> region, Annotation annotation){
 		super(region.getStart(),region.getStop(),annotation);
 		this.regions = region;
 	}
 	
-	public Gene(Vector<RegionVector> region, Annotation annotation){
+	public Gene(Vector<Transcript> region, Annotation annotation){
 		super(region.get(0).getStart(),region.get(region.size()-1).getStop(),annotation);
-		regions = new IntervalTree<RegionVector>();
+		regions = new IntervalTree<Transcript>();
 		regions.addAll(region);
 	}
 	
-	public Gene(RegionVector[] region, Annotation annotation){
+	public Gene(Transcript[] region, Annotation annotation){
 		super(region[0].getStart(),region[region.length-1].getStop(), annotation);
-		regions = new IntervalTree<RegionVector>();
+		regions = new IntervalTree<Transcript>();
 		for(int i = 0; i < region.length; i++){
 			regions.add(region[i]);
 		}
@@ -45,7 +46,7 @@ public class Gene extends Region{
 		return regions.toArray(new Region[0]);
 	}
 	
-	public IntervalTree<RegionVector> getRegionsTree(){
+	public IntervalTree<Transcript> getRegionsTree(){
 		return regions;
 	}
 	
@@ -60,16 +61,16 @@ public class Gene extends Region{
 	
 	public Gene merge(){
 		
-		Vector<RegionVector> resultV = new Vector<RegionVector>();
+		Vector<Transcript> resultV = new Vector<Transcript>();
 
-		Iterator<Set<RegionVector>> iterator = regions.groupIterator();
+		Iterator<Set<Transcript>> iterator = regions.groupIterator();
 		while(iterator.hasNext()){
-			Collection<RegionVector> overlap = (Collection<RegionVector>) iterator.next();
+			Collection<Transcript> overlap = (Collection<Transcript>) iterator.next();
 			Vector<Region> overlapVector = new Vector<Region>(overlap);
 			int start = overlapVector.get(0).getStart();
 			overlapVector.sort(new StopRegionComparator());
 			int stop = overlapVector.lastElement().getStop();
-			resultV.add(new RegionVector(start,stop,overlapVector.firstElement().getAnnotation()));
+			resultV.add(new Transcript(start,stop,overlapVector.firstElement().getAnnotation()));
 		}
 		
 		return new Gene(resultV,this.getAnnotation());
@@ -78,7 +79,7 @@ public class Gene extends Region{
 	
 	public Gene merge(Gene rv){
 		
-		IntervalTree<RegionVector> regions = this.regions.clone(); 
+		IntervalTree<Transcript> regions = this.regions.clone(); 
 
 		regions.addAll(rv.getRegionsTree());
 		Gene results = new Gene(regions, this.getAnnotation()); 
@@ -87,11 +88,11 @@ public class Gene extends Region{
 	}
 	
 	public Gene subtract(Gene rv){
-		IntervalTree<RegionVector> regions = this.regions.clone();
+		IntervalTree<Transcript> regions = this.regions.clone();
 		rv = rv.merge();
 		Region[] rvarray = rv.getRegionsArray();
 		for(int i = 0; i < rvarray.length; i++){
-			Vector<RegionVector> rvvector = new Vector<RegionVector>();
+			Vector<Transcript> rvvector = new Vector<Transcript>();
 			int rvstart = rvarray[i].getStart();
 			int rvstop = rvarray[i].getStop();
 			rvvector = regions.getIntervalsIntersecting(rvstart, rvstop, rvvector );
@@ -103,7 +104,7 @@ public class Gene extends Region{
 				
 				if(stop <= rvstop){
 					if(start < rvstart){
-						regions.add(new RegionVector(start,rvstart,curreg.getAnnotation()));
+						regions.add(new Transcript(start,rvstart,curreg.getAnnotation()));
 						regions.remove(curreg);
 					}
 					else{
@@ -112,12 +113,12 @@ public class Gene extends Region{
 				}
 				else{
 					if(start < rvstart){
-						regions.add(new RegionVector(start,rvstart,curreg.getAnnotation()));
-						regions.add(new RegionVector(rvstop,stop,curreg.getAnnotation()));
+						regions.add(new Transcript(start,rvstart,curreg.getAnnotation()));
+						regions.add(new Transcript(rvstop,stop,curreg.getAnnotation()));
 						regions.remove(curreg);
 					}
 					else{
-						regions.add(new RegionVector(rvstop,stop,curreg.getAnnotation()));
+						regions.add(new Transcript(rvstop,stop,curreg.getAnnotation()));
 						regions.remove(curreg);
 					}
 				}
@@ -132,9 +133,9 @@ public class Gene extends Region{
 	public int coveredLength(){
 		int l = 0;
 		
-		Iterator<Set<RegionVector>> iterator = regions.groupIterator();
+		Iterator<Set<Transcript>> iterator = regions.groupIterator();
 		while(iterator.hasNext()){
-			Collection<RegionVector> overlap = (Collection<RegionVector>) iterator.next();
+			Collection<Transcript> overlap = (Collection<Transcript>) iterator.next();
 			Vector<Region> overlapVector = new Vector<Region>(overlap);
 			int start = overlapVector.get(0).getStart();
 			overlapVector.sort(new StopRegionComparator());
@@ -145,12 +146,12 @@ public class Gene extends Region{
 		return l;
 	}
 	
-	public Gene getCoveredRegion(RegionVector rv){
-		IntervalTree<RegionVector> results = new IntervalTree<RegionVector>();
-		rv = rv.merge();
+	public Gene getCoveredRegion(Transcript rv){
+		IntervalTree<Transcript> results = new IntervalTree<Transcript>();
+		rv = (Transcript) rv.merge();
 		Region[] rvarray = rv.getRegionsArray();
 		for(int i = 0; i < rvarray.length; i++){
-			Vector<RegionVector> rvvector = new Vector<RegionVector>();
+			Vector<Transcript> rvvector = new Vector<Transcript>();
 			int rvstart = rvarray[i].getStart();
 			int rvstop = rvarray[i].getStop();
 			rvvector = regions.getIntervalsIntersecting(rvstart+1, rvstop-1, rvvector );
@@ -165,8 +166,8 @@ public class Gene extends Region{
 	}
 	
 	public Gene getRegion(Region r){
-		IntervalTree<RegionVector> results = new IntervalTree<RegionVector>();
-		Vector<RegionVector> rvvector = new Vector<RegionVector>();
+		IntervalTree<Transcript> results = new IntervalTree<Transcript>();
+		Vector<Transcript> rvvector = new Vector<Transcript>();
 		int rvstart = r.getStart();
 		int rvstop = r.getStop();
 		rvvector = regions.getIntervalsIntersecting(rvstart+1, rvstop-1, rvvector );
@@ -183,7 +184,7 @@ public class Gene extends Region{
 		return regions.containsAll(rv.getRegions());
 	}
 	
-	public boolean add(RegionVector rv){
+	public boolean add(Transcript rv){
 		return regions.add(rv);
 	}
 	
@@ -191,12 +192,28 @@ public class Gene extends Region{
 		return regions.remove(region);
 	}	
 	
+	public ArrayList<ExonSkip> getExonSkips(){
+		return null;
+	}
+	
+	public int getTranscriptNumber(){
+		return regions.size();
+	}
+	
+	public int getProteinNumber(){
+		int n = 0;
+		for( Transcript t : regions ){
+			n += t.getProtNum();
+		}
+		return n;
+	}
+	
 	public int hashCode(){
 		return this.getAnnotation().hashCode();
 	}
 	
 	public String toString(){
-		return regions.toTreeString() + this.getAnnotation().toString();
+		return "Gene: "+ super.toString() + "\n" + regions.toTreeString();
 	}
 	
 	class StartRegionComparator implements Comparator<Region>
@@ -214,5 +231,6 @@ public class Gene extends Region{
 	        return x1.getStop() - x2.getStop();
 	    }
 	}
+
 
 }

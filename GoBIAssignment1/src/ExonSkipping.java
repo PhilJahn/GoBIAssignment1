@@ -11,15 +11,16 @@ import java.util.Vector;
 public class ExonSkipping {
 
 	public static void main(String[] args) {
-		String gtfPath = args[0];
-		String outputPath = args[1];
+//		String gtfPath = args[0];
+		String gtfPath = "C:/Users/User/Dropbox/JavaImport/" + "ENSG00000131018.input";
+//		String outputPath = args[1];
 		ExonSkipping ex = new ExonSkipping(gtfPath);
 		
-		
+		System.out.println(ex.getGenes().toString());
 
 	}
 
-	HashMap<Integer,Gene> geneSet;
+	private HashMap<Integer,Gene> geneSet;
 	
 	public ExonSkipping (String gtfPath) {
 		Path filePath = Paths.get(gtfPath);
@@ -84,7 +85,7 @@ public class ExonSkipping {
 	        		int stop = Integer.parseInt(lineSplit[4]);
 	        		
 	        		Annotation cdsAnno = new Annotation(id,chr,strand,super_id,super_super_id,type);
-	        		Region cds = new Transcript(start,stop,cdsAnno);
+	        		Region cds = new Region(start,stop,cdsAnno);
 	        		if(cdsAnno.isSub(curTAnno)){
 	        			curTrans.add(cds);
 	        		}
@@ -100,7 +101,7 @@ public class ExonSkipping {
 	        	for(int i = 0; i < unknownTranscript.size(); i++){
 	        		Region cds = unknownTranscript.get(i);
 	        		Gene gene = geneSet.get(cds.getAnnotation().getSuperSuperId());
-	        		Vector<RegionVector> rvvector = new Vector<RegionVector>();
+	        		Vector<Transcript> rvvector = new Vector<Transcript>();
 	        		rvvector = gene.getRegionsTree().getIntervalsIntersecting(cds.getStart()+1, cds.getStop()-1, rvvector);
 	        		for(int j = 0; j < rvvector.size(); j++){
 	        			if(rvvector.get(j).getAnnotation().isSup(cds.getAnnotation())){
@@ -120,17 +121,57 @@ public class ExonSkipping {
 	
 	public static String getValue(String input){
 		input.trim();
-		String value = input.split(" ")[1];
+		String value = input.split("\"")[1];
 		value = value.replaceAll("\"", "");
 		return value;
 	}
-
-	public static String filePathHome(String filepath){
-		return "C:/Users/User/Dropbox/Studium/" + filepath;
+	
+	public String getSkippedExons(){
+		String result = "";
+		for (Integer key: geneSet.keySet()) {
+			Gene curGene = geneSet.get(key);
+			Annotation curAnno = curGene.getAnnotation();
+			ArrayList<ExonSkip> skips = curGene.getExonSkips();
+			for(ExonSkip skip: skips){
+				result += curAnno.getId() + "\t" + curAnno.getName() + "\t"+  curAnno.getChromosome() + "\t" + curAnno.getStrand() +"\t";
+				result += curGene.getTranscriptNumber() + "\t" + curGene.getProteinNumber() + "\t";
+				result += skip.getStart() + ":" + skip.getStop() + "\t";
+				
+				ArrayList<Region> introns = skip.getWTIntrons();
+				result += (introns.get(0).getStart() +":" + introns.get(0).getStop());
+				for(int i = 1; i < introns.size(); i++ ){
+					result += ("|"+introns.get(i).getStart() +":" + introns.get(i).getStop());
+				}
+				result += "\t";
+				
+				ArrayList<String> wt = skip.getWTProt();
+				result += (wt.get(0));
+				for(int i = 1; i < wt.size(); i++ ){
+					result += ("|"+wt.get(i));
+				}
+				result += "\t";
+				
+				ArrayList<String> sv = skip.getSVProt();
+				result += (sv.get(0));
+				for(int i = 1; i < sv.size(); i++ ){
+					result += ("|"+sv.get(i));
+				}
+				result += "\t";
+				
+				result += skip.getMinEx() + "\t" + skip.getMaxEx() + "\t" + skip.getMinBase() + "\t" + skip.getMaxBase() +"\n";
+				
+			}
+		}
+		return result;
 	}
-
-	public static String filePathHome(){
-		return "C:/Users/User/Dropbox/Studium/Java Import/import.txt";
+	
+	
+	public ArrayList<Gene> getGenes(){
+		ArrayList<Gene> result = new ArrayList<Gene>();
+		for (Integer key: geneSet.keySet()) {
+		   result.add(geneSet.get(key));
+		}
+		return result;
 	}
 	
 
