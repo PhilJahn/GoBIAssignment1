@@ -90,10 +90,6 @@ public class Annotation {
 		}
 	}
 	
-	public boolean equals(Annotation a){
-		return a.getId().equals(id) && a.getSuperId().equals(super_id) && a.getSuperSuperId().equals(super_super_id);
-	}
-	
 	
 	@Override
 	public int hashCode(){

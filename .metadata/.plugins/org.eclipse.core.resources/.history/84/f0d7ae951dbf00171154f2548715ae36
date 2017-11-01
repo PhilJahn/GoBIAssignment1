@@ -17,7 +17,6 @@ public class ExonSkipping {
 		ExonSkipping ex = new ExonSkipping(gtfPath);
 		
 		System.out.println(ex.getGenes().toString());
-		System.out.println(ex.getGenes().get(0).getTranscriptNumber() + "\t" + ex.getGenes().get(0).getProteinNumber());
 
 	}
 
@@ -34,10 +33,8 @@ public class ExonSkipping {
 	        Annotation curGAnno = null;
 	        Transcript curTrans = null;
 	        Annotation curTAnno = null;
-	        Annotation curCAnno = null;
 	        ArrayList<Transcript> unknownGene = new ArrayList<Transcript>();
 	        ArrayList<Region> unknownTranscript = new ArrayList<Region>();
-	        HashMap<String,Annotation> mapAnno = new HashMap<String,Annotation>(); 
 	        while ((line = br.readLine()) != null){
 	        	String[] lineSplit = line.split("\t");
 	        	String[] attrSplit = lineSplit[8].split(";");
@@ -45,7 +42,7 @@ public class ExonSkipping {
 	        	if(lineSplit[2].equals("gene")){
 	        		attr = getAttributes(attrSplit);
 	        		String id = attr.get("gene_id");
-	        		String name = attr.get("gene_name");       		
+	        		String name = attr.get("gene_name");
 	        		String type = lineSplit[1];
 	        		char strand = lineSplit[6].charAt(0);
 	        		int chr = Integer.parseInt(lineSplit[0]);
@@ -90,19 +87,9 @@ public class ExonSkipping {
 	        		int chr = Integer.parseInt(lineSplit[0]);
 	        		int start = Integer.parseInt(lineSplit[3]);
 	        		int stop = Integer.parseInt(lineSplit[4]);
-	        		Region cds;
-	        		Annotation cdsAnno;
-	        		if(curCAnno != null && curCAnno.getId().equals(id) && curCAnno.getSuperId().equals(super_id) && curCAnno.getSuperSuperId().equals(super_super_id)){
-	        			cdsAnno = curCAnno;
-	        		}
-	        		else{
-	        			cdsAnno = mapAnno.get(id+super_id+super_super_id);
-	        			if(!(cdsAnno != null)){
-	        				cdsAnno = new Annotation(id,chr,strand,super_id,super_super_id,type);
-	        				mapAnno.put(id+super_id+super_super_id,cdsAnno);
-	        			}
-	        		}
-	        		cds = new Region(start,stop,cdsAnno);
+	        		
+	        		Annotation cdsAnno = new Annotation(id,chr,strand,super_id,super_super_id,type);
+	        		Region cds = new Region(start,stop,cdsAnno);
 	        		if(cdsAnno.isSub(curTAnno)){
 	        			curTrans.add(cds);
 	        		}
@@ -140,8 +127,8 @@ public class ExonSkipping {
 		HashMap <String,String> attrMap = new HashMap <String,String>();
 		for(int i = 0; i < attrs.length; i++){
 			String[] attr = attrs[i].split("\"");
-			attr[0] = attr[0].trim();
-			attr[1] = attr[1].trim();
+			attr[0].trim();
+			attr[1].trim();
 			attrMap.put(attr[0],attr[1]);
 		}
 		return attrMap;

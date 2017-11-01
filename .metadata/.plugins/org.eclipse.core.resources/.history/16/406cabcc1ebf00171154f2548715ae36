@@ -82,16 +82,7 @@ public class Annotation {
 	}
 	
 	public String toString(){
-		if(name.equals("")){
-			return id + "; " + super_id;
-		}
-		else{
-			return id + "; " + name + "; " + super_id;
-		}
-	}
-	
-	public boolean equals(Annotation a){
-		return a.getId().equals(id) && a.getSuperId().equals(super_id) && a.getSuperSuperId().equals(super_super_id);
+		return id + "; " + name + "; " + super_id;
 	}
 	
 	

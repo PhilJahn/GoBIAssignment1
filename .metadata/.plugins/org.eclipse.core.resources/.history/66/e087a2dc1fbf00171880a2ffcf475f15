@@ -200,7 +200,7 @@ public class Gene extends Region{
 		int n = 0;
 		for( Transcript t : regions ){
 			if(t.getRegionsTree().size() > 0){
-				n ++;
+				n += t.getProtNum();
 			}
 		}
 		return n;

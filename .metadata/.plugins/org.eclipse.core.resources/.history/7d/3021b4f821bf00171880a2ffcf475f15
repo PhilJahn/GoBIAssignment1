@@ -92,7 +92,7 @@ public class ExonSkipping {
 	        		int stop = Integer.parseInt(lineSplit[4]);
 	        		Region cds;
 	        		Annotation cdsAnno;
-	        		if(curCAnno != null && curCAnno.getId().equals(id) && curCAnno.getSuperId().equals(super_id) && curCAnno.getSuperSuperId().equals(super_super_id)){
+	        		if(curCAnno.getId().equals(id) && curCAnno.getSuperId().equals(super_id) && curCAnno.getSuperSuperId().equals(super_super_id)){
 	        			cdsAnno = curCAnno;
 	        		}
 	        		else{

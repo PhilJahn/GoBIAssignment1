@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 
 public class Transcript extends RegionVector{
 
@@ -7,14 +6,7 @@ public class Transcript extends RegionVector{
 	}
 	
 	public int getProtNum(){
-		ArrayList<Annotation> annos = new ArrayList<Annotation>();
-		for(Region r: this.getRegionsTree()){
-			Annotation anno = r.getAnnotation();
-			if(!annos.contains(anno)){
-				annos.add(anno);
-			}
-		}
-		return annos.size();
+		return 0;
 		
 	}
 	

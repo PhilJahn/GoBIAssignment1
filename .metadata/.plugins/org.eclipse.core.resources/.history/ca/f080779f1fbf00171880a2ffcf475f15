@@ -197,13 +197,7 @@ public class Gene extends Region{
 	}
 	
 	public int getTranscriptNumber(){
-		int n = 0;
-		for( Transcript t : regions ){
-			if(t.getRegionsTree().size() > 0){
-				n ++;
-			}
-		}
-		return n;
+		return regions.size();
 	}
 	
 	public int getProteinNumber(){

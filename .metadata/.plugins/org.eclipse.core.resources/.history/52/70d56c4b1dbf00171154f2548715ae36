@@ -17,7 +17,6 @@ public class ExonSkipping {
 		ExonSkipping ex = new ExonSkipping(gtfPath);
 		
 		System.out.println(ex.getGenes().toString());
-		System.out.println(ex.getGenes().get(0).getTranscriptNumber() + "\t" + ex.getGenes().get(0).getProteinNumber());
 
 	}
 
@@ -34,18 +33,14 @@ public class ExonSkipping {
 	        Annotation curGAnno = null;
 	        Transcript curTrans = null;
 	        Annotation curTAnno = null;
-	        Annotation curCAnno = null;
 	        ArrayList<Transcript> unknownGene = new ArrayList<Transcript>();
 	        ArrayList<Region> unknownTranscript = new ArrayList<Region>();
-	        HashMap<String,Annotation> mapAnno = new HashMap<String,Annotation>(); 
 	        while ((line = br.readLine()) != null){
 	        	String[] lineSplit = line.split("\t");
 	        	String[] attrSplit = lineSplit[8].split(";");
-	        	HashMap<String,String> attr;
 	        	if(lineSplit[2].equals("gene")){
-	        		attr = getAttributes(attrSplit);
-	        		String id = attr.get("gene_id");
-	        		String name = attr.get("gene_name");       		
+	        		String id = getValue(attrSplit[0]);
+	        		String name = getValue(attrSplit[1]);
 	        		String type = lineSplit[1];
 	        		char strand = lineSplit[6].charAt(0);
 	        		int chr = Integer.parseInt(lineSplit[0]);
@@ -59,10 +54,9 @@ public class ExonSkipping {
 	        		curGAnno = gene.getAnnotation();
 	        	}
 	        	else if(lineSplit[2].equals("transcript")){
-	        		attr = getAttributes(attrSplit);
-	        		String super_id = attr.get("gene_id");
-	        		String id = attr.get("transcript_id");
-	        		String name = attr.get("transcript_name");
+	        		String super_id = getValue(attrSplit[0]);
+	        		String id = getValue(attrSplit[1]);
+	        		String name = getValue(attrSplit[5]);
 	        		String type = lineSplit[1];
 	        		char strand = lineSplit[6].charAt(0);
 	        		int chr = Integer.parseInt(lineSplit[0]);
@@ -81,28 +75,17 @@ public class ExonSkipping {
 	        		curTAnno = trans.getAnnotation();
 	        	}
 	        	else if(lineSplit[2].equals("CDS")){
-	        		attr = getAttributes(attrSplit);
-	        		String super_super_id = attr.get("gene_id");
-	        		String super_id = attr.get("transcript_id");
-	        		String id = attr.get("protein_id");
+	        		String super_super_id = getValue(attrSplit[0]);
+	        		String super_id = getValue(attrSplit[1]);
+	        		String id = getValue(attrSplit[10]);
 	        		String type = lineSplit[1];
 	        		char strand = lineSplit[6].charAt(0);
 	        		int chr = Integer.parseInt(lineSplit[0]);
 	        		int start = Integer.parseInt(lineSplit[3]);
 	        		int stop = Integer.parseInt(lineSplit[4]);
-	        		Region cds;
-	        		Annotation cdsAnno;
-	        		if(curCAnno != null && curCAnno.getId().equals(id) && curCAnno.getSuperId().equals(super_id) && curCAnno.getSuperSuperId().equals(super_super_id)){
-	        			cdsAnno = curCAnno;
-	        		}
-	        		else{
-	        			cdsAnno = mapAnno.get(id+super_id+super_super_id);
-	        			if(!(cdsAnno != null)){
-	        				cdsAnno = new Annotation(id,chr,strand,super_id,super_super_id,type);
-	        				mapAnno.put(id+super_id+super_super_id,cdsAnno);
-	        			}
-	        		}
-	        		cds = new Region(start,stop,cdsAnno);
+	        		
+	        		Annotation cdsAnno = new Annotation(id,chr,strand,super_id,super_super_id,type);
+	        		Region cds = new Region(start,stop,cdsAnno);
 	        		if(cdsAnno.isSub(curTAnno)){
 	        			curTrans.add(cds);
 	        		}
@@ -136,17 +119,12 @@ public class ExonSkipping {
 		}
 	}
 	
-	public static HashMap<String,String> getAttributes (String[] attrs){
-		HashMap <String,String> attrMap = new HashMap <String,String>();
-		for(int i = 0; i < attrs.length; i++){
-			String[] attr = attrs[i].split("\"");
-			attr[0] = attr[0].trim();
-			attr[1] = attr[1].trim();
-			attrMap.put(attr[0],attr[1]);
-		}
-		return attrMap;
+	public static String getValue(String input){
+		input.trim();
+		String value = input.split("\"")[1];
+		value = value.replaceAll("\"", "");
+		return value;
 	}
-	
 	
 	public String getSkippedExons(){
 		String result = "";
