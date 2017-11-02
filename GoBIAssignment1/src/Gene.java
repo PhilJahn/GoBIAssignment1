@@ -193,12 +193,15 @@ public class Gene extends Region{
 	}	
 	
 	public ArrayList<ExonSkip> getExonSkips(){
+		this.removeEmpty();
+		System.out.println("emptied");
 		ArrayList<ExonSkip> result = new ArrayList<ExonSkip>();
 		IntervalTree<ExonSkip> skips = new IntervalTree<ExonSkip>();
 		Iterator<Transcript> iterator = regions.iterator();
 		while(iterator.hasNext()){
 			 Transcript t = iterator.next();
 			 t.setIntrons();
+//			 System.out.println(t.getIntrons().toTreeString());
 		}
 		Iterator<Transcript> tIterator = regions.iterator();
 		while(tIterator.hasNext()){
@@ -210,7 +213,7 @@ public class Gene extends Region{
 				int start = svcand.getStart();
 				int stop = svcand.getStop();
 				ArrayList<Transcript> itlist = new ArrayList<Transcript>();
-				itlist = regions.getIntervalsEqual(svcand.getStart(), svcand.getStop(), itlist);
+				itlist = regions.getIntervalsSpanning(svcand.getStart(), svcand.getStop(), itlist);
 				for( Transcript it: itlist){
 					ArrayList<Region> wtcands = new ArrayList<Region>();
 					wtcands = it.getIntrons().getIntervalsSpannedBy(start, stop, wtcands);
@@ -229,7 +232,7 @@ public class Gene extends Region{
 								for(int j = posStart; j <= i; j++){
 									Region curwt = wtcands.get(j);
 									wtintrons.add(curwt);
-									String[] curwt_prot = curwt.getAnnotation().getId().split("|");
+									String[] curwt_prot = curwt.getAnnotation().getId().split("\\|");
 									for(int k = 0; k < curwt_prot.length; k++){
 										if(!(wt_prot.contains(curwt_prot[k]))){
 											wt_prot.add(curwt_prot[k]);
@@ -250,15 +253,36 @@ public class Gene extends Region{
 			}
 		}
 		
-		Iterator<Set<ExonSkip>> esIterator = skips.groupIterator();
+		Iterator<ExonSkip> esIterator = skips.iterator();
+		for( ExonSkip es: skips){
+			result.add(es);
+			System.out.println("results add" + es.getSVProt() + " " + es.getWTProt());
+		}
+		int i = 0;
+		while (i < result.size()){
+			ExonSkip es = result.get(i);
+			ArrayList<ExonSkip> esMerge = new ArrayList<ExonSkip>();
+			esMerge = skips.getIntervalsSpannedBy(es.getStart(), es.getStop(), esMerge);
+			for(ExonSkip mergeES: esMerge){
+				if(mergeES != es){
+					System.out.println("Merging " + mergeES.toString() + " " + es.toString());
+					es.merge(mergeES);
+					result.remove(mergeES);
+				}
+			}
+			i++;
+		}
 		
+
 		return result;
 	}
 	
 	public void removeEmpty(){
-		for( Transcript t : regions ){
+		Iterator<Transcript> iterator = regions.iterator();
+		while(iterator.hasNext()){
+			Transcript t = iterator.next();
 			if(t.getRegionsTree().size() == 0){
-				regions.remove(t);
+				iterator.remove();
 			}
 		}
 	}

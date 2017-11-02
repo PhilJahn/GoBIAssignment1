@@ -16,8 +16,10 @@ public class ExonSkipping {
 //		String outputPath = args[1];
 		ExonSkipping ex = new ExonSkipping(gtfPath);
 		
-		System.out.println(ex.getGenes().toString());
-		System.out.println(ex.getGenes().get(0).getTranscriptNumber() + "\t" + ex.getGenes().get(0).getProteinNumber());
+//		System.out.println(ex.getGenes().toString());
+//		System.out.println(ex.getGenes().get(0).getTranscriptNumber() + "\t" + ex.getGenes().get(0).getProteinNumber());
+
+		System.out.println(ex.getSkippedExons());
 
 	}
 
@@ -153,7 +155,9 @@ public class ExonSkipping {
 		for (Integer key: geneSet.keySet()) {
 			Gene curGene = geneSet.get(key);
 			Annotation curAnno = curGene.getAnnotation();
+			System.out.println("getExonSkips");
 			ArrayList<ExonSkip> skips = curGene.getExonSkips();
+			System.out.println("gotExonSkips");
 			int tn = curGene.getTranscriptNumber();
 			int pn = curGene.getProteinNumber();
 			for(ExonSkip skip: skips){

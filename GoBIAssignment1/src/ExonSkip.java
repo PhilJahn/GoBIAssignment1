@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import AugmentedTree.Interval;
+import AugmentedTree.IntervalTree;
 
 public class ExonSkip implements Interval{
 
@@ -96,11 +97,14 @@ public class ExonSkip implements Interval{
 			}
 		}
 		
+		IntervalTree<Region> mergeTree = new IntervalTree<Region>();
+		mergeTree.addAll(wt_introns);
+		
 		for(int i = 0; i < eintron.size(); i++){
 			Region curewt = eintron.get(i);
 			if(!wt_introns.contains(curewt)){
-				for(int j = 0; j < wt_introns.size(); j++){
-					Region curwt = wt_introns.get(j);
+					
+				mergeTree.getIntervalsSpannedBy(curewt.getStart(), curewt.getStop(), )
 					if(curwt.getStart() == curewt.getStart()){
 						if(curwt.length() > curewt.length()){
 							eintron.set(j, curewt);
@@ -156,5 +160,9 @@ public class ExonSkip implements Interval{
 	
 	public int getMaxBase(){
 		return maxBase;
+	}
+	
+	public String toString(){
+		return start + ":" + stop + " sv: " + sv_prot.toString() + " wt: " + wt_prot.toString();
 	}
 }
