@@ -1,6 +1,7 @@
 import java.util.ArrayList;
+import AugmentedTree.Interval;
 
-public class ExonSkip {
+public class ExonSkip implements Interval{
 
 	private ArrayList<String> sv_prot;
 	private ArrayList<String> wt_prot;
@@ -15,10 +16,15 @@ public class ExonSkip {
 	private int minBase;
 	private int maxBase;
 	
+	private ArrayList<Transcript> sv_trans;
+	private ArrayList<Transcript> wt_trans;
 	
-	public ExonSkip(ArrayList<String> sv_prot, ArrayList<Region> introns, ArrayList<String> wt_prot) {
+	
+	public ExonSkip(ArrayList<String> sv_prot, ArrayList<Region> introns, ArrayList<String> wt_prot, ArrayList<Transcript> sv_trans, ArrayList<Transcript> wt_trans) {
 		this.sv_prot = sv_prot;
 		this.wt_prot = wt_prot;
+		this.sv_trans = sv_trans;
+		this.wt_trans = wt_trans;
 		
 		start = introns.get(0).getStart();
 		stop = introns.get(introns.size()-1).getStop();
@@ -41,9 +47,19 @@ public class ExonSkip {
 		istop = introns.get(introns.size()-1).getStart();
 		minBase += istart-istop;
 		maxBase = minBase;
+		
 	}
 	
 	public void merge(ExonSkip e){
+		if(start < stop){
+			start = Math.min(e.getStart(),start);
+			stop = Math.max(e.getStop(),stop);
+		}
+		else{
+			start = Math.max(e.getStart(),start);
+			stop = Math.min(e.getStop(),stop);
+		}
+		
 		minEx = Math.min(minEx, e.getMinEx());
 		maxEx = Math.max(maxEx, e.getMaxEx());
 		
@@ -53,6 +69,8 @@ public class ExonSkip {
 		ArrayList<String> esv = e.getSVProt();
 		ArrayList<String> ewt = e.getWTProt();
 		ArrayList<Region> eintron = e.getWTIntrons();
+		ArrayList<Transcript> esvt = e.getSVTrans();
+		ArrayList<Transcript> ewtt = e.getWTTrans();
 		
 		for(int i = 0; i < esv.size(); i++){
 			if(!sv_prot.contains(esv.get(i))){
@@ -63,6 +81,18 @@ public class ExonSkip {
 		for(int i = 0; i < ewt.size(); i++){
 			if(!wt_prot.contains(ewt.get(i))){
 				wt_prot.add(ewt.get(i));
+			}
+		}
+		
+		for(int i = 0; i < esvt.size(); i++){
+			if(!sv_trans.contains(esvt.get(i))){
+				sv_trans.add(esvt.get(i));
+			}
+		}
+		
+		for(int i = 0; i < ewtt.size(); i++){
+			if(!wt_trans.contains(ewtt.get(i))){
+				wt_trans.add(ewtt.get(i));
 			}
 		}
 		
@@ -89,6 +119,14 @@ public class ExonSkip {
 	
 	public ArrayList<String> getWTProt(){
 		return wt_prot;
+	}
+	
+	public ArrayList<Transcript> getSVTrans(){
+		return sv_trans;
+	}
+	
+	public ArrayList<Transcript> getWTTrans(){
+		return wt_trans;
 	}
 	
 	public int getStart(){

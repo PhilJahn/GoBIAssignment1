@@ -154,9 +154,11 @@ public class ExonSkipping {
 			Gene curGene = geneSet.get(key);
 			Annotation curAnno = curGene.getAnnotation();
 			ArrayList<ExonSkip> skips = curGene.getExonSkips();
+			int tn = curGene.getTranscriptNumber();
+			int pn = curGene.getProteinNumber();
 			for(ExonSkip skip: skips){
 				result += curAnno.getId() + "\t" + curAnno.getName() + "\t"+  curAnno.getChromosome() + "\t" + curAnno.getStrand() +"\t";
-				result += curGene.getTranscriptNumber() + "\t" + curGene.getProteinNumber() + "\t";
+				result += tn + "\t" + pn + "\t";
 				result += skip.getStart() + ":" + skip.getStop() + "\t";
 				
 				ArrayList<Region> introns = skip.getWTIntrons();

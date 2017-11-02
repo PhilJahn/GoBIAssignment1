@@ -1,6 +1,10 @@
 import java.util.ArrayList;
 
+import AugmentedTree.IntervalTree;
+
 public class Transcript extends RegionVector{
+	
+	private IntervalTree<Region> introns; 
 
 	public Transcript(int start, int stop, Annotation annotation)  {
 		super(start, stop, annotation);
@@ -16,6 +20,14 @@ public class Transcript extends RegionVector{
 		}
 		return annos.size();
 		
+	}
+	
+	public void setIntrons(){
+		introns = this.invert().getRegionsTree();
+	}
+	
+	public IntervalTree<Region> getIntrons(){
+		return introns;
 	}
 	
 	public String toString(){

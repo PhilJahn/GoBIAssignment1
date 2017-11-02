@@ -193,7 +193,74 @@ public class Gene extends Region{
 	}	
 	
 	public ArrayList<ExonSkip> getExonSkips(){
-		return null;
+		ArrayList<ExonSkip> result = new ArrayList<ExonSkip>();
+		IntervalTree<ExonSkip> skips = new IntervalTree<ExonSkip>();
+		Iterator<Transcript> iterator = regions.iterator();
+		while(iterator.hasNext()){
+			 Transcript t = iterator.next();
+			 t.setIntrons();
+		}
+		Iterator<Transcript> tIterator = regions.iterator();
+		while(tIterator.hasNext()){
+			Transcript t = (Transcript) tIterator.next();
+			IntervalTree<Region> introns = t.getIntrons();
+			Iterator<Region> iIterator = introns.iterator();
+			while(iIterator.hasNext()){
+				Region svcand = iIterator.next();
+				int start = svcand.getStart();
+				int stop = svcand.getStop();
+				ArrayList<Transcript> itlist = new ArrayList<Transcript>();
+				itlist = regions.getIntervalsEqual(svcand.getStart(), svcand.getStop(), itlist);
+				for( Transcript it: itlist){
+					ArrayList<Region> wtcands = new ArrayList<Region>();
+					wtcands = it.getIntrons().getIntervalsSpannedBy(start, stop, wtcands);
+					if(wtcands.size()>1){		
+						int posStart = -1;
+						for(int i = 0; i < wtcands.size(); i++){
+							Region wtcand = wtcands.get(i);
+							if(wtcand.getStart() == start){
+								posStart = i;
+							}
+							else if(posStart != -1 && wtcand.getStop() == stop){
+								ArrayList<String> sv_prot = new ArrayList<String>();
+								sv_prot.add(svcand.getAnnotation().getId());
+								ArrayList<Region> wtintrons = new ArrayList<Region>();
+								ArrayList<String> wt_prot = new ArrayList<String>();
+								for(int j = posStart; j <= i; j++){
+									Region curwt = wtcands.get(j);
+									wtintrons.add(curwt);
+									String[] curwt_prot = curwt.getAnnotation().getId().split("|");
+									for(int k = 0; k < curwt_prot.length; k++){
+										if(!(wt_prot.contains(curwt_prot[k]))){
+											wt_prot.add(curwt_prot[k]);
+										}
+									}
+								}
+
+								ArrayList<Transcript> sv_trans = new ArrayList<Transcript>();
+								sv_trans.add(t);
+								ArrayList<Transcript> wt_trans = new ArrayList<Transcript>();
+								wt_trans.add(it);
+								
+								skips.add(new ExonSkip(sv_prot, wtintrons , wt_prot, sv_trans , wt_trans));
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		Iterator<Set<ExonSkip>> esIterator = skips.groupIterator();
+		
+		return result;
+	}
+	
+	public void removeEmpty(){
+		for( Transcript t : regions ){
+			if(t.getRegionsTree().size() == 0){
+				regions.remove(t);
+			}
+		}
 	}
 	
 	public int getTranscriptNumber(){

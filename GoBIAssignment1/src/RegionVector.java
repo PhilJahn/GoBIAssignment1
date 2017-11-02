@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -161,10 +162,17 @@ public class RegionVector extends Region{
 		do{
 			overlapVector.sort(new StopRegionComparator());
 			start = overlapVector.lastElement().getStop();
+			Annotation startAnno = overlapVector.lastElement().getAnnotation();
 			overlap = (Collection<Region>) iterator.next();
 			overlapVector = new Vector<Region>(overlap);
 			stop = overlapVector.get(0).getStart();
-			resultV.add(new Region(start,stop));
+			Annotation stopAnno = overlapVector.lastElement().getAnnotation();
+			if(startAnno.equals(stopAnno)){
+				resultV.add(new Region(start,stop,startAnno));
+			}
+			else{
+				resultV.add(new Region(start,stop,new Annotation(startAnno,stopAnno)));
+			}
 		}while(iterator.hasNext());
 		
 		return new RegionVector(resultV,this.getAnnotation());
@@ -186,19 +194,34 @@ public class RegionVector extends Region{
 		return l;
 	}
 	
-	public RegionVector getCoveredRegion(RegionVector rv){
-		IntervalTree<Region> results = new IntervalTree<Region>();
+	public ArrayList<Region> getCoveredRegion(RegionVector rv){
+		ArrayList<Region> results = new ArrayList<Region>();
 		rv = rv.merge();
 		Region[] rvarray = rv.getRegionsArray();
 		for(int i = 0; i < rvarray.length; i++){
-			Vector<Region> rvvector = new Vector<Region>();
+			ArrayList<Region> rvlist = new ArrayList<Region>();
 			int rvstart = rvarray[i].getStart();
 			int rvstop = rvarray[i].getStop();
-			rvvector = regions.getIntervalsIntersecting(rvstart+1, rvstop-1, rvvector );
-			results.addAll(rvvector);
+			rvlist = regions.getIntervalsIntersecting(rvstart+1, rvstop-1, rvlist );
+			results.addAll(rvlist);
 		}
+		
 		if(results.size() > 0){
-			return new RegionVector(results,this.getAnnotation());
+			return results;
+		}else{
+			return null;
+		}
+
+	}
+	
+	public ArrayList<Region> getCoveredRegion(Region r){
+		ArrayList<Region> results = new ArrayList<Region>();
+		int rvstart = r.getStart();
+		int rvstop = r.getStop();
+		results = regions.getIntervalsIntersecting(rvstart+1, rvstop-1, results );
+		
+		if(results.size() > 0){
+			return results;
 		}else{
 			return null;
 		}

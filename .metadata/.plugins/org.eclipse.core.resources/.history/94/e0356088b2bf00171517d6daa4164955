@@ -1,0 +1,25 @@
+import java.util.ArrayList;
+
+public class Transcript extends RegionVector{
+
+	public Transcript(int start, int stop, Annotation annotation)  {
+		super(start, stop, annotation);
+	}
+	
+	public int getProtNum(){
+		ArrayList<Annotation> annos = new ArrayList<Annotation>();
+		for(Region r: this.getRegionsTree()){
+			Annotation anno = r.getAnnotation();
+			if(!annos.contains(anno)){
+				annos.add(anno);
+			}
+		}
+		return annos.size();
+		
+	}
+	
+	public String toString(){
+		return "Transcript: " + super.toString();
+	}
+	
+}

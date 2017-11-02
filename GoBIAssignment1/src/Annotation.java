@@ -39,6 +39,23 @@ public class Annotation {
 		this.type = type;
 	}
 	
+	public Annotation(Annotation a, Annotation b) {
+		this.id = a.getId() + "|" + b.getId();
+		this.name = a.getName() + "|" + b.getName();
+		this.chr = a.getChromosome();
+		this.strand = a.getStrand();
+		this.super_id = a.getSuperId();
+		this.super_super_id = a.getSuperSuperId();
+		String typea = a.getType();
+		String typeb = b.getType();
+		if(typea.equals(typeb)){
+			this.type = typea;
+		}
+		else{
+			this.type = typea + "|" + typeb;
+		}
+	}
+
 	public String getId(){
 		return id;
 	}
@@ -61,6 +78,10 @@ public class Annotation {
 	
 	public String getSuperSuperId(){
 		return super_super_id;
+	}
+	
+	public String getType(){
+		return type;
 	}
 	
 	public boolean isSup(Annotation a){
