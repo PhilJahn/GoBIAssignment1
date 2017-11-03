@@ -26,7 +26,7 @@ public class RegionVector extends Region{
 		
 		RegionVector r2 = r1.invert();
 		
-		System.out.println(r1.getCoveredRegion(r2).toString());
+		System.out.println(r2.toString());
 
 	}
 
@@ -70,8 +70,8 @@ public class RegionVector extends Region{
 		return regions;
 	}
 	
-	public Vector<Region> getRegions(){
-		Vector <Region> r = new Vector<Region>();
+	public ArrayList<Region> getRegions(){
+		ArrayList <Region> r = new ArrayList<Region>();
 		Region[] regionArray = regions.toArray(new Region[0]);
 		for(int i = 0; i < regionArray.length; i++){
 			r.add(regionArray[i]);
@@ -162,6 +162,7 @@ public class RegionVector extends Region{
 		do{
 			overlapVector.sort(new StopRegionComparator());
 			start = overlapVector.lastElement().getStop();
+			start ++;
 			Annotation startAnno = overlapVector.lastElement().getAnnotation();
 			overlap = (Collection<Region>) iterator.next();
 			overlapVector = new Vector<Region>(overlap);
