@@ -3,3 +3,4 @@
 /GeneOld.class
 /ExonSkip.class
 /ExonSkip$StopRegionComparator.class
+/Gene$StartSkipComparator.class

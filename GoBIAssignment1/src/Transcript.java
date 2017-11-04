@@ -22,12 +22,29 @@ public class Transcript extends RegionVector{
 		
 	}
 	
-	public void setIntrons(){
-		introns = this.invert().getRegionsTree();
+	public boolean setIntrons(){
+		if(this.getRegionsTree().size() > 1){
+			introns = this.invert().getRegionsTree();
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
 	
 	public IntervalTree<Region> getIntrons(){
 		return introns;
+	}
+	
+	public boolean equals(Object o){
+		if(o.getClass() == this.getClass()){
+			return equals((Transcript) o);
+		}
+		return false;
+	}
+	
+	public boolean equals(Transcript t){
+		return this.getAnnotation().equals(t.getAnnotation());
 	}
 	
 	public String toString(){

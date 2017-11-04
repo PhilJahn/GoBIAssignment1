@@ -185,6 +185,12 @@ public class Gene extends Region{
 	}
 	
 	public boolean add(Transcript rv){
+		if(rv.getStart() < this.getStart()){
+			this.setStart(rv.getStart());
+		}
+		if(rv.getStop() > this.getStop()){
+			this.setStop(rv.getStop());
+		}
 		return regions.add(rv);
 	}
 	
@@ -200,7 +206,10 @@ public class Gene extends Region{
 		Iterator<Transcript> iterator = regions.iterator();
 		while(iterator.hasNext()){
 			 Transcript t = iterator.next();
-			 t.setIntrons();
+			 boolean hasIntrons = t.setIntrons();
+			 if(!hasIntrons){
+				 iterator.remove();
+			 }
 		}
 		Iterator<Transcript> tIterator = regions.iterator();
 		while(tIterator.hasNext()){
@@ -209,17 +218,17 @@ public class Gene extends Region{
 			Iterator<Region> iIterator = introns.iterator();
 			while(iIterator.hasNext()){
 				Region svcand = iIterator.next();
-				if(svcand.getStart() == 152665363){
-					System.out.println("152665363 Intron found");
-				}
+//				if(svcand.getStart() == 181795895){
+//					System.out.println("181795895 Intron found");
+//				}
 				int start = svcand.getStart();
 				int stop = svcand.getStop();
 				ArrayList<Transcript> itlist = new ArrayList<Transcript>();
 				itlist = regions.getIntervalsSpanning(svcand.getStart(), svcand.getStop(), itlist);
 				for( Transcript it: itlist){
-					if(svcand.getStart() == 152665363){
-						System.out.println("");
-					}
+//					if(svcand.getStart() == 181795895){
+//						System.out.println("");
+//					}
 					ArrayList<Region> wtcands = new ArrayList<Region>();
 					wtcands = it.getIntrons().getIntervalsIntersecting(start, stop, wtcands);
 					wtcands.sort(new StartRegionComparator());
@@ -227,18 +236,19 @@ public class Gene extends Region{
 						int posStart = -1;
 						for(int i = 0; i < wtcands.size(); i++){
 							Region wtcand = wtcands.get(i);
-							if(wtcand.getStart() == 152665363){
-								System.out.println("Start Intron found " + wtcand.getStart() + " " + start + ":" + wtcand.getStop() + " " + stop +" " + wtcand.toString());
-							}
-							if(wtcand.getStop() == 152671303){
-								System.out.println("Stop Intron found " + wtcand.getStart() + " " + start + ":" + wtcand.getStop() + " " + stop +" " + wtcand.toString());							}
+//							if(wtcand.getStart() == 181795895){
+//								System.out.println("Start Intron found " + wtcand.getStart() + " " + start + ":" + wtcand.getStop() + " " + stop +" " + wtcand.toString());
+//							}
+//							if(wtcand.getStop() == 181815049){
+//								System.out.println("Stop Intron found " + wtcand.getStart() + " " + start + ":" + wtcand.getStop() + " " + stop +" " + wtcand.toString());
+//							}
 							if(wtcand.getStart() == start){
 								posStart = i;
 							}
 							else if(posStart != -1 && wtcand.getStop() == stop){
-								if(wtcand.getStop() == 152671303){
-									System.out.println("Split found");
-								}
+//								if(wtcand.getStop() == 181815049){
+//									System.out.println("Split found");
+//								}
 								ArrayList<String> sv_prot = new ArrayList<String>();
 								sv_prot.add(svcand.getAnnotation().getId());
 								ArrayList<Region> wtintrons = new ArrayList<Region>();
@@ -271,6 +281,7 @@ public class Gene extends Region{
 			result.add(es);
 //			System.out.println("results add" + es.getSVProt() + " " + es.getWTProt() + " on " + es.getStart() + ":" + es.getStop());
 		}
+		
 		int i = 0;
 		while (i < result.size()){
 			ExonSkip es = result.get(i);
@@ -283,17 +294,23 @@ public class Gene extends Region{
 					result.remove(mergeES);
 				}
 			}
-			ArrayList<ExonSkip> esRemove = new ArrayList<ExonSkip>();
-			esMerge = skips.getIntervalsSpannedBy(es.getStart(), es.getStop(), esRemove);
-			for(ExonSkip removeES: esRemove){
-				if(removeES != es){
-//					System.out.println("Removing " + removeES.toString() + " due to " + es.toString());
-					result.remove(removeES);
+			i++;
+		}
+		
+		while (i < result.size()){
+			ExonSkip es = result.get(i);
+			ArrayList<ExonSkip> esCheck = new ArrayList<ExonSkip>();
+			esCheck = skips.getIntervalsIntersecting(es.getStart(), es.getStop(), esCheck);
+			for(ExonSkip es2: esCheck){
+				if(es2 != es){
+					if(es.mergeable(es2)){
+						es.merge(es2);
+						result.remove(es2);
+					}
 				}
 			}
 			i++;
 		}
-		
 
 		return result;
 	}
@@ -334,6 +351,14 @@ public class Gene extends Region{
 		return "Gene: "+ super.toString() + "\n" + regions.toTreeString();
 	}
 	
+	class StartSkipComparator implements Comparator<ExonSkip>
+	{
+	    public int compare(ExonSkip x1, ExonSkip x2)
+	    {
+	        return x1.getStart() - x2.getStart();
+	    }
+	}
+	
 	class StartRegionComparator implements Comparator<Region>
 	{
 	    public int compare(Region x1, Region x2)
@@ -349,6 +374,7 @@ public class Gene extends Region{
 	        return x1.getStop() - x2.getStop();
 	    }
 	}
+	
 
 
 }

@@ -2,14 +2,15 @@
 public class Annotation {
 	
 	private String id;
-	private int chr;
+	private String chr;
 	private char strand;
 	private String super_id;
 	private String super_super_id;
 	private String name;
 	private String type;
+	private String gene_name;
 	
-	public Annotation(String id, String name, int chr, char strand, String type){
+	public Annotation(String id, String name, String chr, char strand, String type){
 		this.id = id;
 		this.name = name;
 		this.chr = chr;
@@ -17,9 +18,10 @@ public class Annotation {
 		this.super_id = "";
 		this.super_super_id = "";
 		this.type = type;
+		this.gene_name = name;
 	}
 	
-	public Annotation(String id, String name, int chr, char strand, String super_id, String type){
+	public Annotation(String id, String name, String chr, char strand, String super_id, String type, String gene_name){
 		this.id = id;
 		this.name = name;
 		this.chr = chr;
@@ -27,9 +29,10 @@ public class Annotation {
 		this.super_id = super_id;
 		this.super_super_id = "";
 		this.type = type;
+		this.gene_name = gene_name;
 	}
 	
-	public Annotation(String id, int chr, char strand, String super_id, String super_super_id, String type){
+	public Annotation(String id, String chr, char strand, String super_id, String super_super_id, String type, String gene_name){
 		this.id = id;
 		this.name = "";
 		this.chr = chr;
@@ -37,6 +40,7 @@ public class Annotation {
 		this.super_id = super_id;
 		this.super_super_id = super_super_id;
 		this.type = type;
+		this.gene_name = gene_name;
 	}
 	
 	public Annotation(Annotation a, Annotation b) {
@@ -46,6 +50,7 @@ public class Annotation {
 		this.strand = a.getStrand();
 		this.super_id = a.getSuperId();
 		this.super_super_id = a.getSuperSuperId();
+		this.gene_name = a.getGeneName();
 		String typea = a.getType();
 		String typeb = b.getType();
 		if(typea.equals(typeb)){
@@ -64,7 +69,7 @@ public class Annotation {
 		return name;
 	}
 	
-	public int getChromosome(){
+	public String getChromosome(){
 		return chr;
 	}
 	
@@ -82,6 +87,10 @@ public class Annotation {
 	
 	public String getType(){
 		return type;
+	}
+	
+	public String getGeneName(){
+		return gene_name;
 	}
 	
 	public boolean isSup(Annotation a){

@@ -112,13 +112,26 @@ public class ExonSkip implements Interval{
 			}
 		}
 		
+//		if(e.getWTProt().contains("ENSMUSP00000131560")){
+//			System.out.println("ENSMUSP00000131560");
+//			System.out.println("Exons1: " + this.getWTExons());
+//			System.out.println("Exons2: " + e.getWTExons() +"\n");
+//			System.out.println("Introns1: " + this.getWTIntrons());
+//			System.out.println("Introns2: " + e.getWTIntrons() + "\n");
+//			
+//			System.out.println("SV1: " + this.getSVProt().toString());
+//			System.out.println("SV2: " + e.getSVProt().toString());
+//		}
+//		
+//		if(this.getWTProt().contains("ENSMUSP00000131560")){
+//			System.out.println("ENSMUSP00000131560");
+//		}
 		
-		
-		IntervalTree<Region> exonTree = new IntervalTree<Region>();
-		ArrayList<Region> wt_exons = this.getWTExons();
-		
-		
-		ArrayList<Region> ewt_exons = e.getWTExons();
+//		IntervalTree<Region> exonTree = new IntervalTree<Region>();
+//		ArrayList<Region> wt_exons = this.getWTExons();
+//		
+//		
+//		ArrayList<Region> ewt_exons = e.getWTExons();
 		
 //		System.out.println("Exons: " + ewt_exons.toString());
 		
@@ -126,30 +139,30 @@ public class ExonSkip implements Interval{
 		
 //		System.out.println("Introns: " + ewt_introns.toString());
 		
-		for(Region eexon: ewt_exons){
-			if(!(wt_exons.contains(eexon))){
-				wt_exons.add(eexon);
+		for(Region eintron: ewt_introns){
+			if(!(wt_introns.contains(eintron))){
+				wt_introns.add(eintron);
 			}
 		}
 		
 //		System.out.println("Exons2: " + wt_exons);
 		
-		exonTree.addAll(wt_exons);
-		ArrayList<Region> introns = invert(exonTree);
-		if(ewt_introns.get(0).getStop() < wt_introns.get(0).getStop()){
-			introns.add(0,ewt_introns.get(0));
-		}
-		else{
-			introns.add(0,wt_introns.get(0));
-		}
-		if(ewt_introns.get(ewt_introns.size()-1).getStart() > wt_introns.get(wt_introns.size()-1).getStart()){
-			introns.add(ewt_introns.get(ewt_introns.size()-1));
-		}
-		else{
-			introns.add(wt_introns.get(wt_introns.size()-1));
-		}
-		
-		wt_introns = introns;
+//		exonTree.addAll(wt_exons);
+//		ArrayList<Region> introns = invert(exonTree);
+//		if(ewt_introns.get(0).getStop() < wt_introns.get(0).getStop()){
+//			introns.add(0,ewt_introns.get(0));
+//		}
+//		else{
+//			introns.add(0,wt_introns.get(0));
+//		}
+//		if(ewt_introns.get(ewt_introns.size()-1).getStart() > wt_introns.get(wt_introns.size()-1).getStart()){
+//			introns.add(ewt_introns.get(ewt_introns.size()-1));
+//		}
+//		else{
+//			introns.add(wt_introns.get(wt_introns.size()-1));
+//		}
+//		
+//		wt_introns = introns;
 		
 	}
 	
@@ -165,7 +178,6 @@ public class ExonSkip implements Interval{
 		
 		Collection<Region> overlap = (Collection<Region>) iterator.next();
 		Vector<Region> overlapVector = new Vector<Region>(overlap);
-		
 		
 		do{
 			overlapVector.sort(new StopRegionComparator());
@@ -249,4 +261,24 @@ public class ExonSkip implements Interval{
 	        return x1.getStop() - x2.getStop();
 	    }
 	}
+
+	public boolean mergeable(ExonSkip es) {
+		ArrayList<Region> ewt_introns = es.getWTIntrons();
+		if(ewt_introns.size() < this.wt_introns.size()){
+			for(int i = 0; i < ewt_introns.size(); i++){
+				if(wt_introns.contains(ewt_introns.get(i))){
+					return true;
+				}
+			}
+		}
+		else{
+			for(int i = 0; i < wt_introns.size(); i++){
+				if(ewt_introns.contains(wt_introns.get(i))){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 }

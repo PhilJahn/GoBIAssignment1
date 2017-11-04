@@ -7,6 +7,6 @@
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="ExonSkipping"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="C:/Users/User/Dropbox/JavaImport/ENSG00000131018.input C:/Users/User/Dropbox/JavaExport/ENSG00000131018.txt"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-gtf C:/Users/User/Dropbox/JavaImport/Mus_musculus.GRCm38.75.gtf -o C:/Users/User/Dropbox/JavaExport/output.txt"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="GoBIAssignment1"/>
 </launchConfiguration>

@@ -1,0 +1,258 @@
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Vector;
+
+import AugmentedTree.Interval;
+import AugmentedTree.IntervalTree;
+
+public class ExonSkip implements Interval{
+
+	private ArrayList<String> sv_prot;
+	private ArrayList<String> wt_prot;
+	
+	private int start;
+	private int stop;
+	private ArrayList<Region> wt_introns;
+	
+	private int minEx;
+	private int maxEx;
+	
+	private int minBase;
+	private int maxBase;
+	
+	private ArrayList<Transcript> sv_trans;
+	private ArrayList<Transcript> wt_trans;
+	
+	
+	public ExonSkip(ArrayList<String> sv_prot, ArrayList<Region> introns, ArrayList<String> wt_prot, ArrayList<Transcript> sv_trans, ArrayList<Transcript> wt_trans) {
+		this.sv_prot = sv_prot;
+		this.wt_prot = wt_prot;
+		this.sv_trans = sv_trans;
+		this.wt_trans = wt_trans;
+		
+		start = introns.get(0).getStart();
+		stop = introns.get(introns.size()-1).getStop();
+		wt_introns = introns;
+		
+		this.minEx = introns.size()-1;
+		this.maxEx = minEx;
+		
+//		int istart = introns.get(0).getStop();
+//		int istop = 0;
+//		
+//		minBase = 0;
+//		
+//		
+//		for( int i = 1; i < introns.size()-1; i++){
+//			istop = introns.get(i).getStart();
+//			minBase += istop-istart;
+//			istart = introns.get(i).getStop(); 
+//		}
+//		istop = introns.get(introns.size()-1).getStart();
+//		minBase += istart-istop;
+//		maxBase = minBase;
+		
+		ArrayList<Region> wt_exons = this.getWTExons();
+		
+		minBase = 0;
+		
+		for(Region exon : wt_exons){
+			minBase += exon.length();
+		}
+		
+		maxBase = minBase;
+		
+	}
+	
+	public void merge(ExonSkip e){
+		if(start < stop){
+			start = Math.min(e.getStart(),start);
+			stop = Math.max(e.getStop(),stop);
+		}
+		else{
+			start = Math.max(e.getStart(),start);
+			stop = Math.min(e.getStop(),stop);
+		}
+		
+		minEx = Math.min(minEx, e.getMinEx());
+		maxEx = Math.max(maxEx, e.getMaxEx());
+		
+		minBase = Math.min(minBase, e.getMinBase());
+		maxBase = Math.max(maxBase, e.getMaxBase());
+		
+		ArrayList<String> esv = e.getSVProt();
+		ArrayList<String> ewt = e.getWTProt();
+		ArrayList<Transcript> esvt = e.getSVTrans();
+		ArrayList<Transcript> ewtt = e.getWTTrans();
+		
+		for(int i = 0; i < esv.size(); i++){
+			if(!sv_prot.contains(esv.get(i))){
+				sv_prot.add(esv.get(i));
+			}
+		}
+		
+		for(int i = 0; i < ewt.size(); i++){
+			if(!wt_prot.contains(ewt.get(i))){
+				wt_prot.add(ewt.get(i));
+			}
+		}
+		
+		for(int i = 0; i < esvt.size(); i++){
+			if(!sv_trans.contains(esvt.get(i))){
+				sv_trans.add(esvt.get(i));
+			}
+		}
+		
+		for(int i = 0; i < ewtt.size(); i++){
+			if(!wt_trans.contains(ewtt.get(i))){
+				wt_trans.add(ewtt.get(i));
+			}
+		}
+		
+		
+		
+		IntervalTree<Region> exonTree = new IntervalTree<Region>();
+		ArrayList<Region> wt_exons = this.getWTExons();
+		
+		
+		ArrayList<Region> ewt_exons = e.getWTExons();
+		
+//		System.out.println("Exons: " + ewt_exons.toString());
+		
+		ArrayList<Region> ewt_introns = e.getWTIntrons();
+		
+//		System.out.println("Introns: " + ewt_introns.toString());
+		
+		for(Region eexon: ewt_exons){
+			if(!(wt_exons.contains(eexon))){
+				wt_exons.add(eexon);
+			}
+		}
+		
+//		System.out.println("Exons2: " + wt_exons);
+		
+		exonTree.addAll(wt_exons);
+		ArrayList<Region> introns = invert(exonTree);
+		if(ewt_introns.get(0).getStop() < wt_introns.get(0).getStop()){
+			introns.add(0,ewt_introns.get(0));
+		}
+		else{
+			introns.add(0,wt_introns.get(0));
+		}
+		if(ewt_introns.get(ewt_introns.size()-1).getStart() > wt_introns.get(wt_introns.size()-1).getStart()){
+			introns.add(ewt_introns.get(ewt_introns.size()-1));
+		}
+		else{
+			introns.add(wt_introns.get(wt_introns.size()-1));
+		}
+		
+		wt_introns = introns;
+		
+	}
+	
+	public ArrayList<Region> invert(IntervalTree<Region> regions){
+		if(regions.size() < 2){
+			return new ArrayList<Region>();
+		}
+		ArrayList<Region> results = new ArrayList<Region>();
+		
+		Iterator<Set<Region>> iterator = regions.groupIterator();
+		int start = 0;
+		int stop = 0;
+		
+		Collection<Region> overlap = (Collection<Region>) iterator.next();
+		Vector<Region> overlapVector = new Vector<Region>(overlap);
+		
+		
+		do{
+			overlapVector.sort(new StopRegionComparator());
+			start = overlapVector.lastElement().getStop();
+			Annotation startAnno = overlapVector.lastElement().getAnnotation();
+			overlap = (Collection<Region>) iterator.next();
+			try{
+			overlapVector = new Vector<Region>(overlap);
+			}
+			catch(Exception e){
+				System.out.println("Overlap: " + overlap.toString());
+				e.printStackTrace();
+			}
+			stop = overlapVector.get(0).getStart();
+			Annotation stopAnno = overlapVector.lastElement().getAnnotation();
+			if(startAnno.equals(stopAnno)){
+				results.add(new Region(start,stop,startAnno));
+			}
+			else{
+				results.add(new Region(start,stop,new Annotation(startAnno,stopAnno)));
+			}
+		}while(iterator.hasNext());
+		
+		return results;
+	}
+	
+	public ArrayList<String> getSVProt(){
+		return sv_prot;
+	}
+	
+	public ArrayList<String> getWTProt(){
+		return wt_prot;
+	}
+	
+	public ArrayList<Transcript> getSVTrans(){
+		return sv_trans;
+	}
+	
+	public ArrayList<Transcript> getWTTrans(){
+		return wt_trans;
+	}
+	
+	public int getStart(){
+		return start;
+	}
+	
+	public int getStop(){
+		return stop;
+	}
+	
+	public ArrayList<Region> getWTIntrons(){
+		return wt_introns;
+		
+	}
+	
+	public ArrayList<Region> getWTExons(){
+		IntervalTree<Region> exonTree = new IntervalTree<Region>();
+		exonTree.addAll(wt_introns);
+		ArrayList<Region> result = invert(exonTree);
+		return result;
+	}
+	
+	public int getMinEx(){
+		return minEx;
+	}
+	
+	public int getMaxEx(){
+		return maxEx;
+	}
+	
+	public int getMinBase(){
+		return minBase;
+	}
+	
+	public int getMaxBase(){
+		return maxBase;
+	}
+	
+	public String toString(){
+		return start + ":" + stop + " sv: " + sv_prot.toString() + " wt: " + wt_prot.toString();
+	}
+	
+	class StopRegionComparator implements Comparator<Region>
+	{
+	    public int compare(Region x1, Region x2)
+	    {
+	        return x1.getStop() - x2.getStop();
+	    }
+	}
+}

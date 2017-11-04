@@ -11,24 +11,7 @@ import AugmentedTree.IntervalTree;
 public class RegionVector extends Region{
 	
 //Start inclusive, Stop exclusive
-	
-	public static void main(String[] args) {
-		Annotation a = new Annotation("id","name",0,'-',"");
-		RegionVector rv1 = new RegionVector(20,25,a,a);
-		RegionVector rv2 = new RegionVector(5,20,a,a);
-		RegionVector rv3 = new RegionVector(42,48,a,a);
-		RegionVector r1 = rv1.merge(rv2).merge(rv3);
-		
-		System.out.println(r1.toString());
-		
-		RegionVector rv4 = new RegionVector(4,42,a,a);
-		RegionVector rv5 = new RegionVector(40,80,a,a);
-		
-		RegionVector r2 = r1.invert();
-		
-		System.out.println(r2.toString());
 
-	}
 
 	private IntervalTree<Region> regions;
 	
@@ -97,14 +80,11 @@ public class RegionVector extends Region{
    
 	}
 	
-	public RegionVector merge(RegionVector rv){
+	public void merge(RegionVector rv){
 		
 		IntervalTree<Region> regions = this.regions.clone(); 
 
 		regions.addAll(rv.getRegionsTree());
-		RegionVector results = new RegionVector(regions, this.getAnnotation()); 
-		
-        return results;
 	}
 	
 	public RegionVector subtract(RegionVector rv){
@@ -249,6 +229,12 @@ public class RegionVector extends Region{
 	}
 	
 	public boolean add(Region region){
+		if(region.getStart() < this.getStart()){
+			this.setStart(region.getStart());
+		}
+		if(region.getStop() > this.getStop()){
+			this.setStop(region.getStop());
+		}
 		return regions.add(region);
 	}
 	

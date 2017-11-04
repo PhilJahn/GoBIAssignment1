@@ -38,6 +38,14 @@ public class Region implements Interval {
     	return annotation;
     }
     
+    public void setStart(int start){
+    	this.start = start;
+    }
+    
+    public void setStop(int stop){
+    	this.stop = stop;
+    }
+    
     @Override
     public String toString(){
 		return start + ":" + stop + " " + annotation.toString();
