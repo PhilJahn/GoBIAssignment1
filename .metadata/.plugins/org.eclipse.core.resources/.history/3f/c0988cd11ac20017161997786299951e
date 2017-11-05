@@ -1,0 +1,91 @@
+import java.util.ArrayList;
+import java.util.Collection;
+
+import AugmentedTree.IntervalTree;
+
+public class Transcript extends RegionVector{
+	
+	private IntervalTree<Region> introns; 
+
+	public Transcript(int start, int stop, Annotation annotation)  {
+		super(start, stop, annotation);
+	}
+	
+	public int getProtNum(){
+		ArrayList<Annotation> annos = new ArrayList<Annotation>();
+		for(Region r: this.getRegionsTree()){
+			Annotation anno = r.getAnnotation();
+			if(!annos.contains(anno)){
+				annos.add(anno);
+			}
+		}
+		return annos.size();
+		
+	}
+	
+	public boolean setIntrons(){
+		if(this.getRegionsTree().size() > 1){
+			introns = this.invert().getRegionsTree();
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	
+	public Collection<Region> getIntervalsIntersecting(int start, int stop, Collection<Region> re){
+		return this.getRegionsTree().getIntervalsIntersecting(start, stop, re);
+	}
+	
+	public Collection<Region> getIntervalsEqual(int start, int stop, Collection<Region> re){
+		return this.getRegionsTree().getIntervalsEqual(start, stop, re);
+	}
+	
+	public Collection<Region> getIntervalsSpannedBy(int start, int stop, Collection<Region> re){
+		return this.getRegionsTree().getIntervalsSpannedBy(start, stop, re);
+	}
+	
+	public Collection<Region> getIntervalsSpanning(int start, int stop, Collection<Region> re){
+		return this.getRegionsTree().getIntervalsSpanning(start, stop, re);
+	}
+	
+	public Collection<Region> getIntronIntervalsIntersecting(int start, int stop, Collection<Region> re){
+		return this.getIntrons().getIntervalsIntersecting(start, stop, re);
+	}
+	
+	public Collection<Region> getIntronIntervalsEqual(int start, int stop, Collection<Region> re){
+		return this.getIntrons().getIntervalsEqual(start, stop, re);
+	}
+	
+	public Collection<Region> getIntronIntervalsSpannedBy(int start, int stop, Collection<Region> re){
+		return this.getIntrons().getIntervalsSpannedBy(start, stop, re);
+	}
+	
+	public Collection<Region> getIntronIntervalsSpanning(int start, int stop, Collection<Region> re){
+		return this.getIntrons().getIntervalsSpanning(start, stop, re);
+	}
+
+	public Collection<Region> startIntron(int start, Collection<Region> re){
+		return this.getIntrons().getIntervalsRightNeighbor(0, start-1, re);
+	}
+	
+	public IntervalTree<Region> getIntrons(){
+		return introns;
+	}
+	
+	public boolean equals(Object o){
+		if(o.getClass() == this.getClass()){
+			return equals((Transcript) o);
+		}
+		return false;
+	}
+	
+	public boolean equals(Transcript t){
+		return this.getAnnotation().equals(t.getAnnotation());
+	}
+	
+	public String toString(){
+		return "Transcript: " + super.toString();
+	}
+	
+}

@@ -1,54 +1,75 @@
+import java.util.ArrayList;
 
 public class Annotation {
 	
-	private String id;
+	private ArrayList<String> id;
 	private String chr;
 	private char strand;
-	private String super_id;
+	private ArrayList<String> super_id;
 	private String super_super_id;
 	private String name;
 	private String type;
 	private String gene_name;
 	
 	public Annotation(String id, String name, String chr, char strand, String type){
-		this.id = id;
+		this.id = new ArrayList<String>();
+		this.id.add(id);
 		this.name = name;
 		this.chr = chr;
 		this.strand = strand;
-		this.super_id = "";
+		this.super_id = new ArrayList<String>();
+		this.super_id.add("");
 		this.super_super_id = "";
 		this.type = type;
 		this.gene_name = name;
 	}
 	
 	public Annotation(String id, String name, String chr, char strand, String super_id, String type, String gene_name){
-		this.id = id;
+		this.id = new ArrayList<String>();
+		this.id.add(id);
 		this.name = name;
 		this.chr = chr;
 		this.strand = strand;
-		this.super_id = super_id;
+		this.super_id = new ArrayList<String>();
+		this.super_id.add("");
 		this.super_super_id = "";
 		this.type = type;
 		this.gene_name = gene_name;
 	}
 	
 	public Annotation(String id, String chr, char strand, String super_id, String super_super_id, String type, String gene_name){
-		this.id = id;
+		this.id = new ArrayList<String>();
+		this.id.add(id);
 		this.name = "";
 		this.chr = chr;
 		this.strand = strand;
-		this.super_id = super_id;
+		this.super_id = new ArrayList<String>();
+		this.super_id.add("");
 		this.super_super_id = super_super_id;
 		this.type = type;
 		this.gene_name = gene_name;
 	}
 	
 	public Annotation(Annotation a, Annotation b) {
-		this.id = a.getId() + "|" + b.getId();
+		id = new ArrayList<String>();
+		id.addAll(a.getIds());
+		for(int i = 0; i < b.getIds().size(); i++){
+			String bid = b.getIds().get(i);
+			if(!id.contains(bid)){
+				id.add(bid);
+			}
+		}
+		super_id = new ArrayList<String>();
+		super_id.addAll(a.getSuperIds());
+		for(int i = 0; i < b.getSuperIds().size(); i++){
+			String bid = b.getSuperIds().get(i);
+			if(!super_id.contains(bid)){
+				super_id.add(bid);
+			}
+		}
 		this.name = a.getName() + "|" + b.getName();
 		this.chr = a.getChromosome();
 		this.strand = a.getStrand();
-		this.super_id = a.getSuperId();
 		this.super_super_id = a.getSuperSuperId();
 		this.gene_name = a.getGeneName();
 		String typea = a.getType();
@@ -62,6 +83,10 @@ public class Annotation {
 	}
 
 	public String getId(){
+		return id.get(0);
+	}
+	
+	public ArrayList<String> getIds(){
 		return id;
 	}
 	
@@ -78,6 +103,10 @@ public class Annotation {
 	}
 	
 	public String getSuperId(){
+		return super_id.get(0);
+	}
+	
+	public ArrayList<String> getSuperIds(){
 		return super_id;
 	}
 	
@@ -104,7 +133,11 @@ public class Annotation {
 	
 	public boolean isSub(Annotation a){
 		if(a != null){
-			return a.getId().equals(super_id);
+			boolean b = true;
+			for( String aid : a.getIds()){
+				b &= super_id.contains(aid);
+			}
+			return b;
 		}
 		else{
 			return false;
@@ -113,15 +146,15 @@ public class Annotation {
 	
 	public String toString(){
 		if(name.equals("")){
-			return id + "; " + super_id;
+			return id.toString() + "; " + super_id.toString();
 		}
 		else{
-			return id + "; " + name + "; " + super_id;
+			return id.toString() + "; " + name.toString() + "; " + super_id.toString();
 		}
 	}
 	
 	public boolean equals(Annotation a){
-		return a.getId().equals(id) && a.getSuperId().equals(super_id) && a.getSuperSuperId().equals(super_super_id);
+		return a.getIds().equals(id) && a.getSuperIds().equals(super_id) && a.getSuperSuperId().equals(super_super_id);
 	}
 	
 	

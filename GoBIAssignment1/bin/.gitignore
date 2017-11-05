@@ -4,3 +4,8 @@
 /ExonSkip.class
 /ExonSkip$StopRegionComparator.class
 /Gene$StartSkipComparator.class
+/GeneOld$StartSkipComparator.class
+/AugmentedTree/
+/Gene$StartRegionComparator.class
+/ExonSkipOld$StopRegionComparator.class
+/ExonSkipOld.class

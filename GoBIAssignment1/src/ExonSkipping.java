@@ -148,32 +148,32 @@ public class ExonSkipping {
 	        		else if(containsTranscripts){
 	        			unknownTranscript.add(cds);
 	        		}
-	        		else{
-	        			super_id = super_super_id;
-		        		id = super_id;
-		        		String name = attr.get("transcript_name");
-
-		        		Annotation transAnno = new Annotation(id,name,chr,strand,super_id,type,gene_name);
-		        		Transcript trans = new Transcript(start,stop,transAnno);
-		        		if(transAnno.isSub(curGAnno)){
-		        			curGene.add(trans);
-		        		}
-		        		else{
-			        		String geneid = super_id;
-			        		String genename = attr.get("gene_name");   		
-
-			        		Annotation geneAnno = new Annotation(geneid,genename,chr,strand,type);
-			        		Gene gene = new Gene(start, stop, geneAnno);
-			        		geneSet.put(gene.hashCode(),gene);
-			        		gene.add(trans);
-			        		
-			        		curGene = gene;
-			        		curGAnno = gene.getAnnotation();
-		        		}
-		        		
-		        		curTrans = trans;
-		        		curTAnno = trans.getAnnotation();
-	        		}
+//	        		else{
+//	        			super_id = super_super_id;
+//		        		id = super_id;
+//		        		String name = attr.get("transcript_name");
+//
+//		        		Annotation transAnno = new Annotation(id,name,chr,strand,super_id,type,gene_name);
+//		        		Transcript trans = new Transcript(start,stop,transAnno);
+//		        		if(transAnno.isSub(curGAnno)){
+//		        			curGene.add(trans);
+//		        		}
+//		        		else{
+//			        		String geneid = super_id;
+//			        		String genename = attr.get("gene_name");   		
+//
+//			        		Annotation geneAnno = new Annotation(geneid,genename,chr,strand,type);
+//			        		Gene gene = new Gene(start, stop, geneAnno);
+//			        		geneSet.put(gene.hashCode(),gene);
+//			        		gene.add(trans);
+//			        		
+//			        		curGene = gene;
+//			        		curGAnno = gene.getAnnotation();
+//		        		}
+//		        		
+//		        		curTrans = trans;
+//		        		curTAnno = trans.getAnnotation();
+//	        		}
 	        		
 	        	}
 	        	else{}
@@ -200,17 +200,7 @@ public class ExonSkipping {
 	        		}
 	        	}
 	        	for(int i = 0; i < unknownTranscript.size(); i++){
-	        		Region cds = unknownTranscript.get(i);
-	        		
-	        		Gene gene = geneSet.get(cds.getAnnotation().getSuperSuperId());
-	        		ArrayList<Transcript> rvs = new ArrayList<Transcript>();
-	        		rvs = gene.getRegionsTree().getIntervalsIntersecting(cds.getStart()+1, cds.getStop()-1, rvs);
-	        		for(int j = 0; j < rvs.size(); j++){
-	        			if(rvs.get(j).getAnnotation().isSup(cds.getAnnotation())){
-	        				rvs.get(j).add(cds);
-	        				j = rvs.size();
-	        			}
-	        		}
+//TODO
 	        	}
 	        }
 	        }
@@ -238,14 +228,20 @@ public class ExonSkipping {
 		result += "id\tsymbol\tchr\tstrand\tnprots\tntrans\tSV\tWT\tWT_prots\tSV_prots\tmin_skipped_exon\tmax_skipped_exon\tmin_skipped_bases\tmax_skipped_bases\n";
 		for (Integer key: geneSet.keySet()) {
 			Gene curGene = geneSet.get(key);
-			Annotation curAnno = curGene.getAnnotation();
+			Annotation curGAnno = curGene.getAnnotation();
 //			System.out.println("getExonSkips");
 			ArrayList<ExonSkip> skips = curGene.getExonSkips();
 //			System.out.println("gotExonSkips");
 			int tn = curGene.getTranscriptNumber();
 			int pn = curGene.getProteinNumber();
+			
+			String geneid = curGAnno.getId();
+			String genename = curGAnno.getName();
+			String chr = curGAnno.getChromosome();
+			char str = curGAnno.getStrand();
+			
 			for(ExonSkip skip: skips){
-				result += curAnno.getId() + "\t" + curAnno.getName() + "\t"+  curAnno.getChromosome() + "\t" + curAnno.getStrand() +"\t";
+				result += geneid + "\t" + genename + "\t"+  chr + "\t" + str +"\t";
 				result += tn + "\t" + pn + "\t";
 				result += skip.getStart() + ":" + skip.getStop() + "\t";
 				

@@ -46,6 +46,13 @@ public class Region implements Interval {
     	this.stop = stop;
     }
     
+    public Region merge(Region r){
+    	int nstart = Math.min(start,r.getStart());
+    	int nstop = Math.max(stop, r.getStop());
+    	Annotation nannotation = new Annotation(annotation,r.getAnnotation());
+		return new Region(nstart,nstop,nannotation);
+    }
+    
     @Override
     public String toString(){
 		return start + ":" + stop + " " + annotation.toString();
