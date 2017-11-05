@@ -203,7 +203,7 @@ public class Gene extends Region{
 			
 			wt_skips.sort(new StartRegionComparator());
 			
-//			System.out.println(wt_skips);
+			System.out.println(wt_skips);
 
 			ExonSkip skip = new ExonSkip(sv.getAnnotation().getIds(),wt_prot_ids,wt_skips,minEx,maxEx,minBase,maxBase);
 			skips.add(skip);

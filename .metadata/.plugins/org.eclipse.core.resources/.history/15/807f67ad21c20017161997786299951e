@@ -11,24 +11,24 @@ import AugmentedTree.IntervalTree;
 public class Gene extends Region{
 
 	
-//	public static void main(String[] args){
-//		Annotation a = new Annotation("id", "name", "str", '-', "test");
-//		IntervalTree<Region> test = new IntervalTree<Region>();
-//		Region r1 = new Region(1,20,a);
-//		Region r2 = new Region(1,8,a);
-//		Region r3 = new Region(0,10,a);
-//		Region r4 = new Region(7,10,a);
-//		Region r5 = new Region(6,10,a);
-//		test.add(r1);
-//		test.add(r2);
-//		test.add(r3);
-//		test.add(r4);
-//		test.add(r5);
-//		ArrayList<Region> posCheck = new ArrayList<Region>();
-//		posCheck = test.getIntervalsEndAt(10, posCheck);
-//		System.out.println(test.toTreeString());
-//		System.out.println(posCheck.toString());
-//	}
+	public static void main(String[] args){
+		Annotation a = new Annotation("id", "name", "str", '-', "test");
+		IntervalTree<Region> test = new IntervalTree<Region>();
+		Region r1 = new Region(1,20,a);
+		Region r2 = new Region(1,8,a);
+		Region r3 = new Region(0,10,a);
+		Region r4 = new Region(7,10,a);
+		Region r5 = new Region(6,10,a);
+		test.add(r1);
+		test.add(r2);
+		test.add(r3);
+		test.add(r4);
+		test.add(r5);
+		ArrayList<Region> posCheck = new ArrayList<Region>();
+		posCheck = test.getIntervalsEndAt(10, posCheck);
+		System.out.println(test.toTreeString());
+		System.out.println(posCheck.toString());
+	}
 	
 	private HashMap<String,Transcript> transcripts;
 	
@@ -98,10 +98,6 @@ public class Gene extends Region{
 		}
 		//mergeIntrons holds all distinct introns
 		
-//		System.out.println(mergeIntrons.toTreeString());
-		
-		ArrayList<ExonSkip> skips = new ArrayList<ExonSkip>();
-		
 		Iterator<Region> mergeIterator = mergeIntrons.iterator();
 		while(mergeIterator.hasNext()){
 			Region sv = mergeIterator.next();
@@ -128,10 +124,6 @@ public class Gene extends Region{
 				wt_stop_transcript_ids.addAll(wt_candidate.getAnnotation().getSuperIds());
 			}
 			
-//			System.out.println("sv_transcript_ids: " + sv_transcript_ids);
-//			System.out.println("wt_start_transcript_ids: " +wt_start_transcript_ids);
-//			System.out.println("wt_stop_transcript_ids: " +wt_stop_transcript_ids);
-			
 			ArrayList<String> wt_transcript_ids = new ArrayList<String>();
 			
 			for(String wt_start_id: wt_start_transcript_ids){
@@ -141,8 +133,6 @@ public class Gene extends Region{
 					}
 				}
 			}
-			
-			if(wt_transcript_ids.size() > 0){
 			
 			int minBase = svstop -svstart;
 			int maxBase = 0;
@@ -154,9 +144,6 @@ public class Gene extends Region{
 			
 			HashMap<String,Region> wt_skips_hash = new HashMap<String,Region>();
 			
-			
-//			System.out.println("Transcript IDs " + wt_transcript_ids);
-			
 			for( String id: wt_transcript_ids){
 				Transcript wt_transcript = transcripts.get(id);
 				ArrayList<Region> wt_id_skips = new ArrayList<Region>();
@@ -166,11 +153,11 @@ public class Gene extends Region{
 				maxEx = Math.max(maxEx, ex);
 				minEx = Math.min(minEx, ex);
 				
-				int base = svstop-svstart;
+				int base = 0;
 				for(Region wt_skip: wt_id_skips){
 					ArrayList<String> wt_skip_prot = new ArrayList<String>();
 					String key = wt_skip.getStart() + "" + wt_skip.getStop();
-					base -= wt_skip.length();
+					base += wt_skip.length();
 					if(!wt_skips_hash.containsKey(key)){
 						wt_skips_hash.put(key, wt_skip);
 					}
@@ -194,24 +181,19 @@ public class Gene extends Region{
 			
 			
 			
-			
-			
 			ArrayList<Region> wt_skips = new ArrayList<Region>();
 			for(String k : wt_skips_hash.keySet()){
 				wt_skips.add(wt_skips_hash.get(k));
 			}
 			
 			wt_skips.sort(new StartRegionComparator());
-			
-//			System.out.println(wt_skips);
 
 			ExonSkip skip = new ExonSkip(sv.getAnnotation().getIds(),wt_prot_ids,wt_skips,minEx,maxEx,minBase,maxBase);
-			skips.add(skip);
-			}
+					
 		}
 		
 		
-		return skips;
+		return null;
 	}
 	
 	public void removeEmpty(){

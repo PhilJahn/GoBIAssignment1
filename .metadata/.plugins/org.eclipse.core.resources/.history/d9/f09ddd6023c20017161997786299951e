@@ -31,7 +31,7 @@ public class Annotation {
 		this.chr = chr;
 		this.strand = strand;
 		this.super_id = new ArrayList<String>();
-		this.super_id.add(super_id);
+		this.super_id.add("");
 		this.super_super_id = "";
 		this.type = type;
 		this.gene_name = gene_name;
@@ -44,7 +44,7 @@ public class Annotation {
 		this.chr = chr;
 		this.strand = strand;
 		this.super_id = new ArrayList<String>();
-		this.super_id.add(super_id);
+		this.super_id.add("");
 		this.super_super_id = super_super_id;
 		this.type = type;
 		this.gene_name = gene_name;
@@ -67,12 +67,7 @@ public class Annotation {
 				super_id.add(bid);
 			}
 		}
-		if(a.getName().equals("")){
-			this.name = b.getName();
-		}
-		else{
-			this.name = a.getName() + "|" + b.getName();
-		}
+		this.name = a.getName() + "|" + b.getName();
 		this.chr = a.getChromosome();
 		this.strand = a.getStrand();
 		this.super_super_id = a.getSuperSuperId();

@@ -67,12 +67,7 @@ public class Annotation {
 				super_id.add(bid);
 			}
 		}
-		if(a.getName().equals("")){
-			this.name = b.getName();
-		}
-		else{
-			this.name = a.getName() + "|" + b.getName();
-		}
+		this.name = a.getName() + "|" + b.getName();
 		this.chr = a.getChromosome();
 		this.strand = a.getStrand();
 		this.super_super_id = a.getSuperSuperId();

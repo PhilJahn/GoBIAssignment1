@@ -49,6 +49,13 @@ public class ExonSkip implements Interval{
 		return wt_prot;
 	}
 	
+	public ArrayList<Transcript> getSVTrans(){
+		return sv_trans;
+	}
+	
+	public ArrayList<Transcript> getWTTrans(){
+		return wt_trans;
+	}
 	
 	public int getStart(){
 		return start;
@@ -61,6 +68,13 @@ public class ExonSkip implements Interval{
 	public ArrayList<Region> getWTIntrons(){
 		return wt_introns;
 		
+	}
+	
+	public ArrayList<Region> getWTExons(){
+		IntervalTree<Region> exonTree = new IntervalTree<Region>();
+		exonTree.addAll(wt_introns);
+		ArrayList<Region> result = invert(exonTree);
+		return result;
 	}
 	
 	public int getMinEx(){

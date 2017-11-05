@@ -105,8 +105,8 @@ public class ExonSkipping {
 
 	        		Annotation transAnno = new Annotation(id,name,chr,strand,super_id,type,gene_name);
 	        		Transcript trans = new Transcript(start,stop,transAnno);
-//	        		System.out.println(curGAnno.toString());
-//	        		System.out.println("Id: " +transAnno.getId() + "Super Id:" + transAnno.getSuperId());
+	        		System.out.println(curGAnno.toString());
+	        		System.out.println(transAnno.toString());
 	        		
 	        		if(transAnno.isSub(curGAnno)){
 	        			curGene.add(trans);
@@ -181,6 +181,7 @@ public class ExonSkipping {
 	        	}
 	        	else{}
 	        	for(int i = 0; i < unknownGene.size(); i++){
+	        		System.out.println("I was here");
 	        		Transcript trans = unknownGene.get(i);
 	        		Gene gene = geneSet.get(trans.getAnnotation().getSuperId());
 	        		if(gene != null){
