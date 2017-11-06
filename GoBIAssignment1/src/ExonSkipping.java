@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Vector;
@@ -16,6 +17,7 @@ import java.util.Vector;
 public class ExonSkipping {
 
 	public static void main(String[] args) {
+//		long startTime = System.currentTimeMillis();		
 		String gtfPath ="";
 		String outputPath ="";
 		for(int i =0; i < args.length-1; i++){
@@ -45,17 +47,17 @@ public class ExonSkipping {
 				e.printStackTrace();
 			}
 		}
-
+//		long stopTime = System.currentTimeMillis();
+//		System.out.println("Input:" + (stopTime-startTime));	
 	}
 
 	private HashMap<Integer,Gene> geneSet;
 	
 	public ExonSkipping (String gtfPath) {
+//		long startTime = System.currentTimeMillis();
 		Path filePath = Paths.get(gtfPath);
 		geneSet = new HashMap<Integer,Gene>();
 	    try {
-	    	boolean containsGenes = false;
-	    	boolean containsTranscripts = false;
 	    	File file = filePath.toFile();
 	        BufferedReader br = new BufferedReader (new FileReader(file));
 	        String line;
@@ -72,54 +74,55 @@ public class ExonSkipping {
 	        	if(lineSplit.length >= 8){
 	        	String[] attrSplit = lineSplit[8].split(";");
 	        	HashMap<String,String> attr;
-	        	if(lineSplit[2].equals("gene")){
-	        		containsGenes = true;
-	        		attr = getAttributes(attrSplit);
-	        		String id = attr.get("gene_id");
-	        		String name = attr.get("gene_name");       		
-	        		String type = lineSplit[1];
-	        		char strand = lineSplit[6].charAt(0);
-	        		String chr = lineSplit[0];
-	        		int start = Integer.parseInt(lineSplit[3]);
-	        		int stop = Integer.parseInt(lineSplit[4]);
-	        		
-	        		Annotation geneAnno = new Annotation(id,name,chr,strand,type);
-	        		Gene gene = new Gene(start, stop, geneAnno);
-	        		geneSet.put(gene.hashCode(),gene);
-	        		curGene = gene;
-	        		curGAnno = gene.getAnnotation();
-	        	}
-	        	else if(lineSplit[2].equals("transcript")){
-	        		containsTranscripts = true;
-	        		attr = getAttributes(attrSplit);
-	        		String super_id = attr.get("gene_id");
-	        		String gene_name = attr.get("gene_name");
-	        		String id = attr.get("transcript_id");
-	        		String name = attr.get("transcript_name");
-	        		String type = lineSplit[1];
-	        		char strand = lineSplit[6].charAt(0);
-	        		String chr = lineSplit[0];
-	        		int start = Integer.parseInt(lineSplit[3]);
-	        		int stop = Integer.parseInt(lineSplit[4]);
-	        		
-
-	        		Annotation transAnno = new Annotation(id,name,chr,strand,super_id,type,gene_name);
-	        		Transcript trans = new Transcript(start,stop,transAnno);
+//	        	System.out.println(line);
+//	        	if(lineSplit[2].equals("gene")){
+//	        		attr = getAttributes(attrSplit);
+//	        		String id = attr.get("gene_id");
+//	        		String name = attr.get("gene_name");       		
+//	        		String type = lineSplit[1];
+//	        		char strand = lineSplit[6].charAt(0);
+//	        		String chr = lineSplit[0];
+//	        		int start = Integer.parseInt(lineSplit[3]);
+//	        		int stop = Integer.parseInt(lineSplit[4]);
+//	        		
+//	        		Annotation geneAnno = new Annotation(id,name,chr,strand,type);
+//	        		Gene gene = new Gene(start, stop, geneAnno);
+//	        		geneSet.put(gene.hashCode(),gene);
+//	        		curGene = gene;
+//	        		curGAnno = gene.getAnnotation();
+//	        	}
+//	        	else if(lineSplit[2].equals("transcript")){
+//	        		attr = getAttributes(attrSplit);
+//	        		String super_id = attr.get("gene_id");
+//	        		String gene_name = attr.get("gene_name");
+//	        		String id = attr.get("transcript_id");
+//	        		String name = attr.get("transcript_name");
+//	        		String type = lineSplit[1];
+//	        		char strand = lineSplit[6].charAt(0);
+//	        		String chr = lineSplit[0];
+//	        		int start = Integer.parseInt(lineSplit[3]);
+//	        		int stop = Integer.parseInt(lineSplit[4]);
+//	        		
+//
+//	        		Annotation transAnno = new Annotation(id,name,chr,strand,super_id,type,gene_name);
+//	        		Transcript trans = new Transcript(start,stop,transAnno);
 //	        		System.out.println(curGAnno.toString());
 //	        		System.out.println("Id: " +transAnno.getId() + "Super Id:" + transAnno.getSuperId());
-	        		
-	        		if(transAnno.isSub(curGAnno)){
-	        			curGene.add(trans);
-	        		}
-	        		else{
-	        			unknownGene.add(trans);
-	        		}
+//	        		
+//	        		if(transAnno.isSub(curGAnno)){
+//	        			curGene.add(trans);
+//	        		}
+//	        		else{
+//	        			unknownGene.add(trans);
+//	        		}
+//	        	
+//	        		
+//	        		curTrans = trans;
+//	        		curTAnno = trans.getAnnotation();
+//	        	}
+
 	        	
-	        		
-	        		curTrans = trans;
-	        		curTAnno = trans.getAnnotation();
-	        	}
-	        	else if(lineSplit[2].equals("CDS")){
+	        	if(lineSplit[2].equals("CDS")){
 	        		attr = getAttributes(attrSplit);
 	        		String super_super_id = attr.get("gene_id");
 	        		String gene_name = attr.get("gene_name");
@@ -148,8 +151,26 @@ public class ExonSkipping {
 	        		if(cdsAnno.isSub(curTAnno)){
 	        			curTrans.add(cds);
 	        		}
-	        		else if(containsTranscripts){
-	        			unknownTranscript.add(cds);
+	        		else {
+		        		String transcript_name = attr.get("transcript_name");	        			
+		        		Annotation transAnno = new Annotation(super_id,transcript_name,chr,strand,super_super_id,type,gene_name);
+		        		Transcript trans = new Transcript(start,stop,transAnno);
+
+		        		if(transAnno.isSub(curGAnno)){
+		        			curGene.add(trans);
+		        		}
+		        		else{
+			        		Annotation geneAnno = new Annotation(super_super_id,gene_name,chr,strand,type);
+			        		Gene gene = new Gene(start, stop, geneAnno);
+			        		geneSet.put(gene.hashCode(),gene);
+			        		curGene = gene;
+			        		curGAnno = geneAnno;
+			        		curGene.add(trans);
+		        		}
+		        		
+		        		curTAnno = transAnno;
+		        		curTrans = trans;
+		        		curTrans.add(cds);
 	        		}
 //	        		else{
 //	        			super_id = super_super_id;
@@ -180,38 +201,40 @@ public class ExonSkipping {
 	        		
 	        	}
 	        	else{}
-	        	for(int i = 0; i < unknownGene.size(); i++){
-	        		Transcript trans = unknownGene.get(i);
-	        		Gene gene = geneSet.get(trans.getAnnotation().getSuperId());
-	        		if(gene != null){
-	        			gene.add(trans);
-	        		}
-	        		else{
-	        			Annotation transAnno = trans.getAnnotation();
-		        		String geneid = transAnno.getSuperId();
-		        		String genename = transAnno.getGeneName();   		
-		        		String type = transAnno.getType();
-		        		char strand = transAnno.getStrand();
-		        		String chr = transAnno.getChromosome();
-		        		int start = trans.getStart();
-		        		int stop = trans.getStop();
-		        		
-		        		Annotation geneAnno = new Annotation(geneid,genename,chr,strand,type);
-		        		gene = new Gene(start, stop, geneAnno);
-		        		geneSet.put(gene.hashCode(),gene);
-		        		gene.add(trans);
-	        		}
-	        	}
-	        	for(int i = 0; i < unknownTranscript.size(); i++){
-//TODO
 	        	}
 	        }
-	        }
+//	        for(int i = 0; i < unknownGene.size(); i++){
+//	        	Transcript trans = unknownGene.get(i);
+//	        	Gene gene = geneSet.get(trans.getAnnotation().getSuperId());
+//	        	if(gene != null){
+//	        		gene.add(trans);
+//	        	}
+//	        	else{
+//	        		Annotation transAnno = trans.getAnnotation();
+//		        	String geneid = transAnno.getSuperId();
+//		       		String genename = transAnno.getGeneName();   		
+//		       		String type = transAnno.getType();
+//		       		char strand = transAnno.getStrand();
+//		       		String chr = transAnno.getChromosome();
+//		       		int start = trans.getStart();
+//		       		int stop = trans.getStop();
+//		        		
+//		       		Annotation geneAnno = new Annotation(geneid,genename,chr,strand,type);
+//		       		gene = new Gene(start, stop, geneAnno);
+//		      		geneSet.put(gene.hashCode(),gene);
+//		       		gene.add(trans);
+//	       		}
+//	        }
+//	        for(int i = 0; i < unknownTranscript.size(); i++){
+////TODO
+//	        }
 	        br.close();	
 	    	
 	    } catch (Exception e) {
 			e.printStackTrace();
 		}
+//		long stopTime = System.currentTimeMillis();
+//		System.out.println("Input:" + (stopTime-startTime));
 	}
 	
 	public static HashMap<String,String> getAttributes (String[] attrs){
@@ -227,8 +250,12 @@ public class ExonSkipping {
 	
 	
 	public String getSkippedExons(){
-		String result = "";
-		result += "id\tsymbol\tchr\tstrand\tnprots\tntrans\tSV\tWT\tWT_prots\tSV_prots\tmin_skipped_exon\tmax_skipped_exon\tmin_skipped_bases\tmax_skipped_bases\n";
+//		long startTime = System.currentTimeMillis();
+		String tab = "\t";
+		String brk = "\n";
+		char sep = ':';
+		char sip = '|';
+		StringBuilder resultBuilder = new StringBuilder("id\tsymbol\tchr\tstrand\tnprots\tntrans\tSV\tWT\tWT_prots\tSV_prots\tmin_skipped_exon\tmax_skipped_exon\tmin_skipped_bases\tmax_skipped_bases\n");
 		for (Integer key: geneSet.keySet()) {
 			Gene curGene = geneSet.get(key);
 			Annotation curGAnno = curGene.getAnnotation();
@@ -243,37 +270,70 @@ public class ExonSkipping {
 			String chr = curGAnno.getChromosome();
 			char str = curGAnno.getStrand();
 			
+			StringBuilder geneInfo = new StringBuilder(geneid);
+			geneInfo.append(tab);
+			geneInfo.append(genename);
+			geneInfo.append(tab);
+			geneInfo.append(chr);
+			geneInfo.append(tab);
+			geneInfo.append(str);
+			geneInfo.append(tab);
+			geneInfo.append(tn);
+			geneInfo.append(tab);
+			geneInfo.append(pn);
+			geneInfo.append(tab);
+			
 			for(ExonSkip skip: skips){
-				result += geneid + "\t" + genename + "\t"+  chr + "\t" + str +"\t";
-				result += tn + "\t" + pn + "\t";
-				result += skip.getStart() + ":" + skip.getStop() + "\t";
+				resultBuilder.append(geneInfo);
+				resultBuilder.append(skip.getStart());
+				resultBuilder.append(sep);
+				resultBuilder.append(skip.getStop());
+				resultBuilder.append(tab);
 				
-				ArrayList<Region> introns = skip.getWTIntrons();
-				result += (introns.get(0).getStart() +":" + introns.get(0).getStop());
+				ArrayList<Region> introns = new ArrayList<Region>(skip.getWTIntrons());
+				introns.sort(new StartRegionComparator());
+				resultBuilder.append(introns.get(0).getStart());
+				resultBuilder.append(sep);
+				resultBuilder.append(introns.get(0).getStop());
 				for(int i = 1; i < introns.size(); i++ ){
-					result += ("|"+introns.get(i).getStart() +":" + introns.get(i).getStop());
+					Region curIntron = introns.get(i);
+					resultBuilder.append(sip);
+					resultBuilder.append(curIntron.getStart());
+					resultBuilder.append(sep);
+					resultBuilder.append(curIntron.getStop());
 				}
-				result += "\t";
+				resultBuilder.append(tab);
 				
-				ArrayList<String> wt = skip.getWTProt();
-				result += (wt.get(0));
+				ArrayList<String> wt = new ArrayList<String>(skip.getWTProt());
+				resultBuilder.append(wt.get(0));
 				for(int i = 1; i < wt.size(); i++ ){
-					result += ("|"+wt.get(i));
+					resultBuilder.append(sip);					
+					resultBuilder.append(wt.get(i));
 				}
-				result += "\t";
+				resultBuilder.append(tab);
 				
-				ArrayList<String> sv = skip.getSVProt();
-				result += (sv.get(0));
+				ArrayList<String> sv = new ArrayList<String>(skip.getSVProt());
+				resultBuilder.append(sv.get(0));
 				for(int i = 1; i < sv.size(); i++ ){
-					result += ("|"+sv.get(i));
+					resultBuilder.append(sip);					
+					resultBuilder.append(sv.get(i));
 				}
-				result += "\t";
+				resultBuilder.append(tab);
 				
-				result += skip.getMinEx() + "\t" + skip.getMaxEx() + "\t" + skip.getMinBase() + "\t" + skip.getMaxBase() +"\n";
-				
+				resultBuilder.append(skip.getMinEx());
+				resultBuilder.append(tab);
+				resultBuilder.append(skip.getMaxEx());
+				resultBuilder.append(tab);
+				resultBuilder.append(skip.getMinBase());
+				resultBuilder.append(tab);
+				resultBuilder.append(skip.getMaxBase());
+				resultBuilder.append(brk);
+			
 			}
 		}
-		return result;
+//		long stopTime = System.currentTimeMillis();
+//		System.out.println("Skips:" + (stopTime-startTime));
+		return resultBuilder.toString();
 	}
 	
 	
@@ -283,6 +343,14 @@ public class ExonSkipping {
 		   result.add(geneSet.get(key));
 		}
 		return result;
+	}
+	
+	class StartRegionComparator implements Comparator<Region>
+	{
+	    public int compare(Region x1, Region x2)
+	    {
+	        return x1.getStart() - x2.getStart();
+	    }
 	}
 	
 

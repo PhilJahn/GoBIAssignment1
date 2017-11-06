@@ -1,0 +1,66 @@
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+
+import AugmentedTree.IntervalTree;
+
+public class Transcript extends RegionVector{
+	
+	private IntervalTree<Region> introns; 
+	
+	private String id;
+	private HashSet<String> prots;
+
+	public Transcript(int start, int stop, String id, String super_id)  {
+		super(start, stop, id, super_id);
+	}
+	
+	public int getProtNum(){
+		return prots.size();
+	}
+	
+	public HashSet<String> getProts(){
+		return prots;
+	}
+	
+	public String getId(){
+		return id;
+	}
+	
+	public boolean setIntrons(){
+		if(this.getRegionsTree().size() > 1){
+			introns = this.invert().getRegionsTree();
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+
+	
+	public IntervalTree<Region> getIntrons(){
+		return introns;
+	}
+	
+	public boolean add(Region region){
+		boolean r = super.add(region);
+		region.setTranscript(this);
+		return r;
+	}
+	
+	public boolean equals(Object o){
+		if(o.getClass() == this.getClass()){
+			return equals((Transcript) o);
+		}
+		return false;
+	}
+	
+	public boolean equals(Transcript t){
+		return this.id.equals(t.getId());
+	}
+	
+	public String toString(){
+		return "Transcript: " + super.toString();
+	}
+	
+}

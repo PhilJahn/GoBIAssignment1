@@ -48,6 +48,10 @@ public class Transcript extends RegionVector{
 		return this.getAnnotation().equals(t.getAnnotation());
 	}
 	
+	public int hashCode(){
+		return this.getAnnotation().hashCode();
+	}
+	
 	public String toString(){
 		return "Transcript: " + super.toString();
 	}

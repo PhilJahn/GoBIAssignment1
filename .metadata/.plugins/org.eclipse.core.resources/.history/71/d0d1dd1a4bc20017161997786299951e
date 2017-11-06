@@ -1,0 +1,101 @@
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+
+import AugmentedTree.Interval;
+
+public class Region implements Interval {
+    private int start;
+    private int stop;
+    
+    private HashSet<String> id;
+    private HashSet<String> super_id;
+
+//    public Region(int start, int stop) 
+//    {
+//        this.start = start;
+//        this.stop = stop;
+//        this.annotation = null;
+//    }
+    
+    public Region(int start, int stop, String id, String super_id) {
+        this.start = start;
+        this.stop = stop;
+        this.id = new HashSet<String>();
+        this.id.add(id);
+        this. super_id = new HashSet<String>();
+        this.super_id.add(super_id);
+    }
+    
+    public int getStart() {
+        return start;
+    }
+
+    public int getStop() {
+        return stop;
+    }
+    
+    public int length(){
+    	return stop - start;
+    }
+    
+    public void setStart(int start){
+    	this.start = start;
+    }
+    
+    public void setStop(int stop){
+    	this.stop = stop;
+    }
+    
+    public HashSet<String> getId(){
+    	return id;
+    }
+    
+    public HashSet<String> getSuperId(){
+    	return super_id;
+    }
+    
+//    public Region merge(Region r){
+//    	int nstart = Math.min(start,r.getStart());
+//    	int nstop = Math.max(stop, r.getStop());
+//    	
+//    	HashSet<String> nid = (HashSet<String>) this.getId().clone()
+//    	nid.addAll(new ArrayList<String>(r.getId()));
+//    	
+//    	HashSet<String> nsid = (HashSet<String>) this.getSuperId().clone()
+//    	nsid.addAll(new ArrayList<String>(r.getSuperId()));
+//    	
+//		return new Region(nstart,nstop,nid,nsid);
+//    }
+
+	  public void mergeLocal(Region r){
+		int nstart = Math.min(this.start,r.getStart());
+		int nstop = Math.max(this.stop, r.getStop());
+		
+		this.id.addAll(new ArrayList<String>(r.getId()));
+		
+		this.super_id.addAll(new ArrayList<String>(r.getSuperId()));
+	}
+    
+    @Override
+    public String toString(){
+		return start + ":" + stop;
+    	
+    }
+    
+    public boolean equals(Object o){
+    	if(this.getClass() == o.getClass()){
+    		return this.equals((Region) o);
+    	}
+		return false;
+    }
+    
+    public boolean equals(Interval r){
+    	return r.getStart() == this.getStart() && r.getStop() == this.getStop();
+    }
+    
+    public int hashCode(){
+    	String hashString = this.getStart() + "" + this.getStop();
+    	return hashString.hashCode();
+    }
+}
