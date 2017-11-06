@@ -240,12 +240,14 @@ public class ExonSkipping {
 	public static HashMap<String,String> getAttributes (String[] attrs){
 		HashMap <String,String> attrMap = new HashMap <String,String>();
 		for(int i = 0; i < attrs.length; i++){
+			System.out.println(attrs[i]);
 			String curattr = attrs[i];
 			curattr = curattr.trim();
 			String[] attr = curattr.split("\\s+");
 			attr[0] = attr[0].trim();
 			attr[1] = attr[1].trim();
 			attr[1] = attr[1].replaceAll("\"", "");
+			System.out.println(attr[0] + ";" + attr[1]);
 			attrMap.put(attr[0],attr[1]);
 		}
 		return attrMap;
